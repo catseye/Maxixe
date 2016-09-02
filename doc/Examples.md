@@ -95,11 +95,9 @@ A proof that disjunction is commutative.
         block Disjunction
             case
                 Disj_Elim_Left  = or(P, Q)       |- P
-                Disj_Conc_Left  = P              |- P
             end
             case
                 Disj_Elim_Right = or(P, Q)       |- Q
-                Disj_Conc_Right = P              |- P
             end
         end
         Tautology               = P              |- P
@@ -112,15 +110,13 @@ A proof that disjunction is commutative.
             case
                 Step_2 = a                                by Disj_Elim_Left with Step_1
                 Step_3 = or(b, a)                         by Disj_Intro_Left with Step_2, b
-                Step_4 = or(b, a)                         by Disj_Conc_Left with Step_3
             end
             case
-                Step_5 = b                                by Disj_Elim_Right with Step_1
-                Step_6 = or(b, a)                         by Disj_Intro_Right with Step_5, a
-                Step_7 = or(b, a)                         by Disj_Conc_Right with Step_6
+                Step_4 = b                                by Disj_Elim_Right with Step_1
+                Step_5 = or(b, a)                         by Disj_Intro_Right with Step_4, a
             end
         end
-        Step_8 = or(b, a)                                 by Tautology with Step_7
+        Step_6 = or(b, a)                                 by Tautology with Step_5
     qed
     ===> ok
 
@@ -245,7 +241,6 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
         block Existential_Instantiation
             case
                 Let                = exists(X, P) ; V{unique local atom} |- P[X -> V]
-                Then               = P                                   |- P
             end
         end
     
@@ -265,10 +260,9 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
                 Step_8 = socrates(k)                              by Simplification_Right with Step_4
                 Step_9 = and(mortal(k), socrates(k))              by Conjunction with Step_7, Step_8
                 Step_10 = exists(y, and(mortal(y), socrates(y)))  by Existential_Generalization with Step_9, k, y
-                Step_11 = exists(y, and(mortal(y), socrates(y)))  by Then with Step_10
             end
         end
-        Step_12 = exists(y, and(mortal(y), socrates(y)))          by Tautology with Step_11
+        Step_11 = exists(y, and(mortal(y), socrates(y)))          by Tautology with Step_10
     qed
     ===> ok
 
@@ -281,7 +275,6 @@ Generalization (resp. Instantiation) shown together in one place, with abbreviat
     block EI
         case
             Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
-            Then = P                                   |- P
         end
     end
 
@@ -329,7 +322,6 @@ As long as it's not the same as any atom already in P.  (This sounds familiar.)
         block EI
             case
                 Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
-                Then = P                                   |- P
             end
         end
     
@@ -371,12 +363,11 @@ As long as it's not the same as any atom already in P.  (This sounds familiar.)
                         Step_11 = biimpl(even(add(x, c(1))), exists(m, eq(add(x, c(1)), add(m, m))))  by UI with Step_10, add(x, c(1))
                         Step_12 = impl(exists(m, eq(add(x, c(1)), add(m, m))), even(add(x, c(1))))    by Reverse_Weakening with Step_11
                         Step_13 = even(add(x, c(1)))                                                  by Modus_Ponens with Step_9, Step_12
-                        Step_14 = even(add(x, c(1)))                                                  by Then with Step_13
                     end
                 end
-                Step_15 = impl(odd(x), even(add(x, c(1))))       by Conclusion with Step_1, Step_14
+                Step_14 = impl(odd(x), even(add(x, c(1))))       by Conclusion with Step_1, Step_13
             end
         end
-        Step_16 = forall(y, impl(odd(y), even(add(y, c(1)))))    by UG with Step_15, x, y
+        Step_15 = forall(y, impl(odd(y), even(add(y, c(1)))))    by UG with Step_14, x, y
     qed
     ===> ok

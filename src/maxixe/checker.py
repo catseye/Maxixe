@@ -42,7 +42,7 @@ class Checker(object):
             raise ValueError("initial step of case %s of %s must use rule %s" %
                 (case_num, self.current_block.name, block_rule_case.initial.var.name)
             )
-        if case.steps[-1].by.name != block_rule_case.final.var.name:
+        if block_rule_case.final is not None and case.steps[-1].by.name != block_rule_case.final.var.name:
             raise ValueError("final step of case %s of %s must use rule %s" %
                 (case_num, self.current_block.name, block_rule_case.final.var.name)
             )

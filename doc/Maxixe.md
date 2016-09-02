@@ -383,9 +383,9 @@ A proof may consist of nested subproofs, called _blocks_.  Each block must be in
 instantiating a specially-declared _block rule_.  The structure of a block rule determines
 rules determine the structure of the block.
 
-A block rule (and thus a block) consists of one or more _cases_.  Each case contains two
-non-block rules.  The first rule must be used in the first step of the case, and the second
-rule must be used in the final step of the case.
+A block rule (and thus a block) consists of one or more _cases_.  Each case contains one
+or two non-block rules.  The first rule must be used in the first step of the case, and
+the second rule, if given, must be used in the final step of the case.
 
     given
         A =   |- a
@@ -395,6 +395,29 @@ rule must be used in the final step of the case.
                 C = b |- c
             end
         end
+        D = c |- d
+    show
+        d
+    proof
+        S1 = a by A
+        block Subproof
+            case
+                S2 = b by B with S1
+                S3 = c by C with S2
+            end
+        end
+        S4 = d by D with S3
+    qed
+    ===> ok
+
+    given
+        A =   |- a
+        block Subproof
+            case
+                B = a |- b
+            end
+        end
+        C = b |- c
         D = c |- d
     show
         d

@@ -8,7 +8,7 @@ from maxixe.scanner import Scanner
 # Proof         ::= "given" {Rule | BlockRule} "show" Term "proof" {Step | Block} "qed".
 # Rule          ::= Var Attributes "=" [Hyp {";" Hyp}] "|-" Term ["[" Subst {"," Subst} "]"].
 # BlockRule     ::= "block" Var {BlockRuleCase} "end".
-# BlockRuleCase ::= "case" Rule Rule "end".
+# BlockRuleCase ::= "case" Rule [Rule] "end".
 # Hyp           ::= Term Attributes.
 # Attributes    ::= ["{" {Atom} "}"].
 # Subst         ::= Term "->" Term.
@@ -89,7 +89,9 @@ class Parser(object):
         cases = []
         self.scanner.expect('case')
         initial = self.rule()
-        final = self.rule()
+        final = None
+        if not self.scanner.on('end'):
+            final = self.rule()
         self.scanner.expect('end')
         return BlockRuleCase(initial=initial, final=final)
 
