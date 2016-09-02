@@ -61,9 +61,37 @@ Here are some things which are *not* goals of Maxixe:
 Related Work
 ------------
 
-Post Rewrite Systems
+The most proximal influence on Maxixe is certainly [The Incredible Proof Machine][], which
+displays proof steps graphically as a network of nodes, and lets you hook them up to form
+a valid proof.  I learned a lot from it and have had a lot of fun with it.  You should
+check it out too.
 
-incredible.pm
+But I've been interested in writing a proof checker since reading (I think) an example in
+one of Emil Post's early papers on [Post canonical systems][].  I don't remember the
+exact example, but this was part of the research on effective computation, and he was
+showing that what a mathematician or logicial does when checking a proof is essentially
+a string-rewriting process.  Symbol manipulation.  Replacing equals with equals.
 
-MetaMath
+My interest was further piqued by a few mentions of this in the book
+Advanced Topics in Term Rewriting.
 
+And there is a proof in ML for the Working Programmer that I've always wanted to
+mechanize (forthcoming in Maxixe, hopefully.)
+
+I looked into Agda and while the Howard-Curry Isomorphism is really cool, I have to say
+it also makes it possible to conflate two concepts, computing and proving, which are
+in many respects _different_.  And for whatever reason, proofs written as computations
+look just terribly pained to me.  I wanted something with a more classical approach.
+
+And Coq is probably nice for what it does, but I really don't care much right now
+about _finding_ proofs, I just want to check ones I've already found.
+
+And both of these tools are really quite heavyweight; I wanted something lighter.
+
+A modern but somewhat older proof-checker that is based on symbol manipulation is
+[MetaMath].  It fits the bill in many ways, but its syntax is quite ugly.  It has
+a huge body of work rendered to web pages though, so you should check it out too.
+
+[The Incredible Proof Machine]:     http://incredible.pm/
+[Post canonical systems]:           https://en.wikipedia.org/wiki/Post_canonical_system
+[MetaMath]:                         http://us.metamath.org/
