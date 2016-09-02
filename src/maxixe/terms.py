@@ -164,8 +164,8 @@ class Substor(AbstractTerm):
         for lhs, rhs in self.substs:
             lhs = lhs.subst(unifier)
             rhs = rhs.subst(unifier)
-            #if instance.contains(rhs):
-            #    raise ValueError("In %s, in substitution, '%s' already occurs in '%s'" % (step.var.name, rhs, instance))
+            if instance.contains(rhs):
+                raise ValueError("'%s' already occurs in '%s'" % (rhs, instance))
             instance = instance.replace(lhs, rhs)
         return instance
 

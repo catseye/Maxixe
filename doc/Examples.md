@@ -144,7 +144,7 @@ a variable name and say something silly like `forall(zero, ...)`.
         Premise                  =                               |- eq(add(x, c(zero)), x)
         Commutivity_of_Equality  = eq(E1, E0)                    |- impl(eq(E1, E0), eq(E0, E1))
         Modus_Ponens             = P0 ; impl(P0, P1)             |- P1
-        Universal_Generalization = P  ; X{term} ; V{unique atom} |- forall(V, P)[X -> V]
+        Universal_Generalization = P  ; X{term} ; V{unique atom} |- forall(V, P[X -> V])
     show
         forall(y, eq(y, add(y, c(zero))))
     proof
@@ -175,7 +175,7 @@ Note that it also need not be an atom.
             end
         end
     
-        Universal_Generalization = P ; X{term} ; V{unique atom}  |- forall(V, P)[X -> V]
+        Universal_Generalization = P ; X{term} ; V{unique atom}  |- forall(V, P[X -> V])
         Universal_Instantiation  = forall(X, P) ; V{term}        |- P[X -> V]
     
         Premise_1                = |- forall(x, impl(bug(x), creepy(x)))
@@ -184,19 +184,19 @@ Note that it also need not be an atom.
         forall(k, impl(bug(k), and(creepy(k), crawly(k))))
     proof
         Step_1 = forall(x, impl(bug(x), creepy(x)))                   by Premise_1
-        Step_2 = impl(bug(x), creepy(x))                              by Universal_Instantiation with Step_1, x
+        Step_2 = impl(bug(y), creepy(y))                              by Universal_Instantiation with Step_1, y
         Step_3 = forall(x, impl(bug(x), crawly(x)))                   by Premise_2
-        Step_4 = impl(bug(x), crawly(x))                              by Universal_Instantiation with Step_3, x
+        Step_4 = impl(bug(y), crawly(y))                              by Universal_Instantiation with Step_3, y
         block Suppose
             case
-                Step_5 = bug(x)                                       by Supposition with bug(x)
-                Step_6 = creepy(x)                                    by Modus_Ponens with Step_2, Step_5
-                Step_7 = crawly(x)                                    by Modus_Ponens with Step_4, Step_5
-                Step_8 = and(creepy(x), crawly(x))                    by Conjunction with Step_6, Step_7
-                Step_9 = impl(bug(x), and(creepy(x), crawly(x)))      by Conclusion with Step_5, Step_8
+                Step_5 = bug(y)                                       by Supposition with bug(y)
+                Step_6 = creepy(y)                                    by Modus_Ponens with Step_2, Step_5
+                Step_7 = crawly(y)                                    by Modus_Ponens with Step_4, Step_5
+                Step_8 = and(creepy(y), crawly(y))                    by Conjunction with Step_6, Step_7
+                Step_9 = impl(bug(y), and(creepy(y), crawly(y)))      by Conclusion with Step_5, Step_8
             end
         end
-        Step_10 = forall(k, impl(bug(k), and(creepy(k), crawly(k))))  by Universal_Generalization with Step_9, x, k
+        Step_10 = forall(k, impl(bug(k), and(creepy(k), crawly(k))))  by Universal_Generalization with Step_9, y, k
     qed
     ===> ok
 
@@ -209,15 +209,15 @@ scope problems.
 
     given
         Universal_Instantiation    = forall(X, P) ; V{term}       |- P[X -> V]
-        Existential_Generalization = P ; X{term} ; V{unique atom} |- exists(V, P)[X -> V]
+        Existential_Generalization = P ; X{term} ; V{unique atom} |- exists(V, P[X -> V])
     
         Premise                    = |- forall(x, impl(bug(x), creepy(x)))
     show
         exists(k, impl(bug(k), creepy(k)))
     proof
         Step_1 = forall(x, impl(bug(x), creepy(x)))                   by Premise
-        Step_2 = impl(bug(x), creepy(x))                              by Universal_Instantiation with Step_1, x
-        Step_3 = exists(k, impl(bug(k), creepy(k)))                   by Existential_Generalization with Step_2, x, k
+        Step_2 = impl(bug(j), creepy(j))                              by Universal_Instantiation with Step_1, j
+        Step_3 = exists(k, impl(bug(k), creepy(k)))                   by Existential_Generalization with Step_2, j, k
     qed
     ===> ok
 
@@ -237,7 +237,7 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
         Tautology                  = P                                   |- P
     
         Universal_Instantiation    = forall(X, P) ; V{term}              |- P[X -> V]
-        Existential_Generalization = P ;  X{term} ; V{unique atom}       |- exists(V, P)[X -> V]
+        Existential_Generalization = P ;  X{term} ; V{unique atom}       |- exists(V, P[X -> V])
         block Existential_Instantiation
             case
                 Let                = exists(X, P) ; V{unique local atom} |- P[X -> V]
@@ -269,9 +269,9 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
 For comparison, here are all of the rules for Universal (resp. Existential)
 Generalization (resp. Instantiation) shown together in one place, with abbreviated names:
 
-    UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P)[X -> V]
+    UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P[X -> V])
     UI           = forall(X, P) ; V{term}              |- P[X -> V]
-    EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P)[X -> V]
+    EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P[X -> V])
     block EI
         case
             Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
@@ -316,9 +316,9 @@ Perhaps the new variable introduced in UG and EG doesn't have to be unique?
 As long as it's not the same as any atom already in P.  (This sounds familiar.)
 
     given
-        UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P)[X -> V]
+        UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P[X -> V])
         UI           = forall(X, P) ; V{term}              |- P[X -> V]
-        EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P)[X -> V]
+        EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P[X -> V])
         block EI
             case
                 Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
