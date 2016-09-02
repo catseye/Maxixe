@@ -312,3 +312,71 @@ don't assume or prove that it is unique.)  We show that `ee=e`.
         Step_3 = eq(o(e, e), e)   by Identity with Step_2, Step_1
     qed
     ===> ok
+
+Number Theory
+-------------
+
+If y is odd, then y+1 is even.
+
+The variable names used here are kind of painful, in order to avoid name clashes.
+Perhaps the new variable introduced in UG and EG doesn't have to be unique?
+As long as it's not the same as any atom already in P.  (This sounds familiar.)
+
+    given
+        UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P)[X -> V]
+        UI           = forall(X, P) ; V{term}              |- P[X -> V]
+        EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P)[X -> V]
+        block EI
+            case
+                Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
+                Then = P                                   |- P
+            end
+        end
+    
+        Weakening            = biimpl(X, Y)   |- impl(X, Y)
+        Reverse_Weakening    = biimpl(X, Y)   |- impl(Y, X)
+        Modus_Ponens         = P ; impl(P, Q) |- Q
+    
+        block Suppose
+            case
+                Supposition    = A{term}        |- A
+                Conclusion     = P ; Q          |- impl(P, Q)
+            end
+        end
+    
+        Defn_of_Even = |- forall(n, biimpl(even(n), exists(m, eq(n, add(m, m)))))
+        Defn_of_Odd  = |- forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))
+    
+        Add_One_to_Both_Sides = eq(X, Y)                         |- eq(add(X, c(1)), add(Y, c(1)))
+        Provisional_Algebra   = eq(X, add(add(add(A, B), C), D)) |- eq(X, add(add(A, C), add(B, D)))
+        
+    show
+        forall(y, impl(odd(y), even(add(y, c(1)))))
+    proof
+        block Suppose
+            case
+                Step_1 = odd(x)                                                              by Supposition with odd(x)
+                Step_2 = forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))   by Defn_of_Odd
+                Step_3 = biimpl(odd(x), exists(k, eq(x, add(add(k, k), c(1)))))              by UI with Step_2, x
+                Step_4 = impl(odd(x), exists(k, eq(x, add(add(k, k), c(1)))))                by Weakening with Step_3
+                Step_5 = exists(k, eq(x, add(add(k, k), c(1))))                              by Modus_Ponens with Step_1, Step_4
+                block EI
+                    case
+                        Step_6 = eq(x, add(add(j, j), c(1)))                                 by Let with Step_5, j
+                        Step_7 = eq(add(x, c(1)), add(add(add(j, j), c(1)), c(1)))           by Add_One_to_Both_Sides with Step_6
+                        Step_8 = eq(add(x, c(1)), add(add(j, c(1)), add(j, c(1))))           by Provisional_Algebra with Step_7
+                        Step_9 = exists(m, eq(add(x, c(1)), add(m, m)))                      by EG with Step_8, add(j, c(1)), m
+                        
+                        Step_10 = forall(n, biimpl(even(n), exists(m, eq(n, add(m, m)))))             by Defn_of_Even
+                        Step_11 = biimpl(even(add(x, c(1))), exists(m, eq(add(x, c(1)), add(m, m))))  by UI with Step_10, add(x, c(1))
+                        Step_12 = impl(exists(m, eq(add(x, c(1)), add(m, m))), even(add(x, c(1))))    by Reverse_Weakening with Step_11
+                        Step_13 = even(add(x, c(1)))                                                  by Modus_Ponens with Step_9, Step_12
+                        Step_14 = even(add(x, c(1)))                                                  by Then with Step_13
+                    end
+                end
+                Step_15 = impl(odd(x), even(add(x, c(1))))       by Conclusion with Step_1, Step_14
+            end
+        end
+        Step_16 = forall(y, impl(odd(y), even(add(y, c(1)))))    by UG with Step_15, x, y
+    qed
+    ===> ok

@@ -65,8 +65,8 @@ class Checker(object):
         rule = self.proof.get_rule(step.by.name)
 
         if len(rule.hypotheses) != len(step.with_):
-            raise ValueError("Number of arguments provided (%s) does not match number of hypotheses (%s)" %
-                (len(step.with_), len(rule.hypotheses))
+            raise ValueError("In %s, Number of arguments provided (%s) does not match number of hypotheses (%s)" %
+                (step.var.name, len(step.with_), len(rule.hypotheses))
             )
         unifier = {}
         with_terms = []
