@@ -133,9 +133,17 @@ is an "axiom schema" which has no hypotheses.  Maxixe requires that every variab
 of a turnstile can be filled out by a variable on the LHS, so I've taken the liberty of turning
 it into a rule.
 
-The atom introduced as the variable in the `forall` must be unique (i.e. not used previously in
-the proof.)  This implements scope.  Without that restriction, it is possible to confuse
-arbitrary and particular variables and write proofs that make no sense.
+The variable being introduced by Universal Generalization need not be unique, because it
+is bound in a `forall`.
+
+Note that the substitution operation `P[X -> V]` used in the Universal Generalization rule
+first checks that the instance of V does not already occur in P.
+
+(This may in fact be overly restrictive.  But it seems like the most hardship it causes at
+the moment is that it requires you to select different names for variables in parts of the
+proof.  For example, below we show a result `forall(y, ...)`.  We could just as easily
+want to show the result `forall(x, ...)` but x is already a free (arbitrary) variable in
+this proof.)
 
 We use `c(zero)` to represent zero because we can't use `zero` because then you could use it as
 a variable name and say something silly like `forall(zero, ...)`.
@@ -144,7 +152,7 @@ a variable name and say something silly like `forall(zero, ...)`.
         Premise                  =                               |- eq(add(x, c(zero)), x)
         Commutivity_of_Equality  = eq(E1, E0)                    |- impl(eq(E1, E0), eq(E0, E1))
         Modus_Ponens             = P0 ; impl(P0, P1)             |- P1
-        Universal_Generalization = P  ; X{term} ; V{unique atom} |- forall(V, P[X -> V])
+        Universal_Generalization = P  ; X{term} ; V{atom}        |- forall(V, P[X -> V])
     show
         forall(y, eq(y, add(y, c(zero))))
     proof
@@ -159,11 +167,14 @@ a variable name and say something silly like `forall(zero, ...)`.
 
 All bugs are creepy and all bugs are crawly therefore all bugs are both creepy and crawly.
 
-Note that the term introduced as the variable in the UI need *not* be unique, because if
+Note that the term introduced as the variable in the UI need not be unique, because if
 something is true for all `x`, it is true for *all* `x`, even if `x` is something else
-you've already been thinking about and given the name `x`.
+you've already been thinking about and given the name `x`.  Note that it also need not
+be an atom.
 
-Note that it also need not be an atom.
+Note that the substitution operation `P[X -> V]` used in the Universal Instantiation rule
+first checks that the instance of V does not already occur in P.  This prevents situations
+like instantiating ∀x.∃y.x≠y with y, to obtain ∃y.y≠y.
 
     given
         Modus_Ponens             = impl(P, Q)    ; P             |- Q
@@ -175,7 +186,7 @@ Note that it also need not be an atom.
             end
         end
     
-        Universal_Generalization = P ; X{term} ; V{unique atom}  |- forall(V, P[X -> V])
+        Universal_Generalization = P ; X{term} ; V{atom}         |- forall(V, P[X -> V])
         Universal_Instantiation  = forall(X, P) ; V{term}        |- P[X -> V]
     
         Premise_1                = |- forall(x, impl(bug(x), creepy(x)))
@@ -204,12 +215,14 @@ Note that it also need not be an atom.
 
 All bugs are creepy therefore there exists a bug which is creepy.
 
-Again, the new variable name introduced into the `exists` must be unique to avoid
-scope problems.
+The variable being introduced by Existential Generalization need not be unique, because it
+is bound in an `exists`.
+
+Like always with `[X -> V]`, an occurs check occurs.  Not sure if necessary atm.
 
     given
         Universal_Instantiation    = forall(X, P) ; V{term}       |- P[X -> V]
-        Existential_Generalization = P ; X{term} ; V{unique atom} |- exists(V, P[X -> V])
+        Existential_Generalization = P ; X{term} ; V{atom}        |- exists(V, P[X -> V])
     
         Premise                    = |- forall(x, impl(bug(x), creepy(x)))
     show
@@ -226,8 +239,15 @@ scope problems.
 All men are mortal.  There exists a man named Socrates.  Therefore there exists a man who is mortal
 and who is named Socrates.
 
-Very unlike UI, the new variable name introduced during EI needs to be both unique to avoid
-scope problems, and local, to prevent the name from "leaking out" of the EI block.
+Very unlike UI, to avoid scoping problems, the new variable name introduced during EI needs to be:
+
+*   an atom, because instantiating an entire term is probably unjustifiable sometimes
+*   unique, to avoid clashing with another variable that was previously instantiated
+*   local, to prevent the name from "leaking out" of the EI block.
+
+Note that the substitution operation `P[X -> V]` used in the Existential Instantiation rule
+first checks that the instance of V does not already occur in P.  This prevents situations
+like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
 
     given
         Modus_Ponens               = impl(P, Q)    ; P                   |- Q
@@ -237,7 +257,7 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
         Tautology                  = P                                   |- P
     
         Universal_Instantiation    = forall(X, P) ; V{term}              |- P[X -> V]
-        Existential_Generalization = P ;  X{term} ; V{unique atom}       |- exists(V, P[X -> V])
+        Existential_Generalization = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
         block Existential_Instantiation
             case
                 Let                = exists(X, P) ; V{unique local atom} |- P[X -> V]
@@ -269,9 +289,9 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
 For comparison, here are all of the rules for Universal (resp. Existential)
 Generalization (resp. Instantiation) shown together in one place, with abbreviated names:
 
-    UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P[X -> V])
+    UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
     UI           = forall(X, P) ; V{term}              |- P[X -> V]
-    EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P[X -> V])
+    EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
     block EI
         case
             Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
@@ -316,9 +336,9 @@ Perhaps the new variable introduced in UG and EG doesn't have to be unique?
 As long as it's not the same as any atom already in P.  (This sounds familiar.)
 
     given
-        UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P[X -> V])
+        UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
         UI           = forall(X, P) ; V{term}              |- P[X -> V]
-        EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P[X -> V])
+        EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
         block EI
             case
                 Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
