@@ -1,21 +1,21 @@
 # encoding: UTF-8
 
 from maxixe.ast import Proof, Rule, BlockRule, BlockRuleCase, Hyp, Subst, Block, BlockCase, Step
-from maxixe.terms import Term, Var
+from maxixe.terms import Term, Var, Substor
 from maxixe.scanner import Scanner
 
 
 # Proof         ::= "given" {Rule | BlockRule} "show" Term "proof" {Step | Block} "qed".
-# Rule          ::= Var Attributes "=" [Hyp {";" Hyp}] "|-" Term ["[" Subst {"," Subst} "]"].
+# Rule          ::= Var Attributes "=" [Hyp {";" Hyp}] "|-" Term.
 # BlockRule     ::= "block" Var {BlockRuleCase} "end".
 # BlockRuleCase ::= "case" Rule [Rule] "end".
 # Hyp           ::= Term Attributes.
 # Attributes    ::= ["{" {Atom} "}"].
-# Subst         ::= Term "->" Term.
 # Block         ::= "block" Var {BlockCase} "end".
 # BlockCase     ::= "case" {Step | Block} "end".
 # Step          ::= Var "=" Term "by" Var ["with" Term {"," Term}].
-# Term          ::= Var | Atom ["(" Term {"," Term} ")"].
+# Term          ::= Var | Atom ["(" Term {"," Term} ")"] ["[" Subst {"," Subst} "]"].
+# Subst         ::= Term "->" Term.
 # Var           ::= <<A-Z followed by alphanumeric + _>>
 # Atom          ::= <<a-z0-9 followed by alphanumeric + _>>
 
@@ -62,13 +62,7 @@ class Parser(object):
                 hypotheses.append(self.hyp())
         self.scanner.expect('|-')
         conclusion = self.term()
-        substs = []
-        if self.scanner.consume('['):
-            substs.append(self.subst())
-            while self.scanner.consume(','):
-                substs.append(self.subst())
-            self.scanner.expect(']')
-        rule = Rule(var=var, hypotheses=hypotheses, conclusion=conclusion, substs=substs)
+        rule = Rule(var=var, hypotheses=hypotheses, conclusion=conclusion)
         if var.name in self.rule_map:
             raise ValueError("name has already been used for a rule of inference")
         self.rule_map[var.name] = rule
@@ -109,12 +103,6 @@ class Parser(object):
                 attributes.append(attribute)
             self.scanner.expect('}')
         return attributes
-
-    def subst(self):
-        lhs = self.term()
-        self.scanner.expect('->')
-        rhs = self.term()
-        return Subst(lhs=lhs, rhs=rhs)
 
     def block(self, level):
         cases = []
@@ -180,10 +168,30 @@ class Parser(object):
             while self.scanner.consume(','):
                 subterms.append(self.term())
             self.scanner.expect(')')
-        return Term(constructor, subterms=subterms)
+        term = Term(constructor, subterms=subterms)
+        return self.substs(term)
 
     def var(self):
         self.scanner.check_type('variable')
         name = self.scanner.token
         self.scanner.scan()
-        return Var(name)
+        term = Var(name)
+        return self.substs(term)
+
+    def substs(self, term):
+        substs = []
+        if self.scanner.consume('['):
+            substs.append(self.subst())
+            while self.scanner.consume(','):
+                substs.append(self.subst())
+            self.scanner.expect(']')
+        if substs:
+            return Substor(term, substs)
+        else:
+            return term
+
+    def subst(self):
+        lhs = self.term()
+        self.scanner.expect('->')
+        rhs = self.term()
+        return (lhs, rhs)

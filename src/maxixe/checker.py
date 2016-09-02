@@ -101,10 +101,7 @@ class Checker(object):
         instance = rule.conclusion.subst(unifier)
         assert instance.is_ground(), "Not all variables replaced during rule instantiation"
 
-        for sub in rule.substs:
-            lhs = sub.lhs.subst(unifier)
-            rhs = sub.rhs.subst(unifier)
-            instance = instance.replace(lhs, rhs)
+        instance = instance.resolve_substs(unifier)
         
         if not instance.equals(step.term):
             raise ValueError("%s does not follow from %s with %s - it would be %s." % (

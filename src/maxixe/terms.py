@@ -11,6 +11,9 @@ class AbstractTerm(object):
     def equals(self, t2):
         raise NotImplementedError
 
+    def contains(self, other):
+        raise NotImplementedError
+
     def replace(self, old, new):
         raise NotImplementedError
 
@@ -18,6 +21,9 @@ class AbstractTerm(object):
         raise NotImplementedError
 
     def subst(self, unifier):
+        raise NotImplementedError
+
+    def resolve_substs(self, unifier):
         raise NotImplementedError
 
     def collect_atoms(self, atoms):
@@ -45,7 +51,6 @@ class Term(AbstractTerm):
             return "%s(%r)" % (
                 self.__class__.__name__, self.constructor
             )
-            
 
     def is_atom(self):
         return len(self.subterms) == 0
@@ -68,6 +73,14 @@ class Term(AbstractTerm):
                 return False
         return True
 
+    def contains(self, other):
+        if self.equals(other):
+            return True
+        for st in self.subterms:
+            if st.contains(other):
+                return True
+        return False
+
     def replace(self, old, new):
         if self.equals(old):
             return new
@@ -84,6 +97,9 @@ class Term(AbstractTerm):
 
     def subst(self, unifier):
         return Term(self.constructor, subterms=[subterm.subst(unifier) for subterm in self.subterms])
+
+    def resolve_substs(self, unifier):
+        return Term(self.constructor, subterms=[subterm.resolve_substs(unifier) for subterm in self.subterms])
 
     def collect_atoms(self, atoms):
         if self.is_atom():
@@ -102,9 +118,7 @@ class Var(AbstractTerm):
         return self.name
 
     def __repr__(self):
-        return "%s(%r)" % (
-            self.__class__.__name__, self.name
-        )
+        return "%s(%r)" % (self.__class__.__name__, self.name)
 
     def is_atom(self):
         return False
@@ -126,5 +140,37 @@ class Var(AbstractTerm):
     def subst(self, unifier):
         return unifier[self.name]
 
+    def resolve_substs(self, unifier):
+        return self
+
     def collect_atoms(self, atoms):
         pass
+
+
+class Substor(AbstractTerm):
+    def __init__(self, subterm, substs):
+        self.subterm = subterm
+        self.substs = substs  # list of pairs of terms
+
+    def __str__(self):
+        substs_str = ", ".join(["%s -> %s" % (k, v) for k, v in self.substs])
+        return "%s[%s]" % (self.subterm, substs_str)
+
+    def __repr__(self):
+        return "%s(%r, %r)" % (self.__class__.__name__, self.subterm, self.substs)
+
+    def resolve_substs(self, unifier):
+        instance = self.subterm
+        for lhs, rhs in self.substs:
+            lhs = lhs.subst(unifier)
+            rhs = rhs.subst(unifier)
+            #if instance.contains(rhs):
+            #    raise ValueError("In %s, in substitution, '%s' already occurs in '%s'" % (step.var.name, rhs, instance))
+            instance = instance.replace(lhs, rhs)
+        return instance
+
+    def is_ground(self):
+        return self.subterm.is_ground()
+
+    def subst(self, unifier):
+        return Substor(self.subterm.subst(unifier), self.substs)
