@@ -148,7 +148,7 @@ a variable name and say something silly like `forall(zero, ...)`.
         Premise                  =                               |- eq(add(x, c(zero)), x)
         Commutivity_of_Equality  = eq(E1, E0)                    |- impl(eq(E1, E0), eq(E0, E1))
         Modus_Ponens             = P0 ; impl(P0, P1)             |- P1
-        Universal_Generalization = P  ; X{atom} ; V{unique atom} |- forall(V, P)[X -> V]
+        Universal_Generalization = P  ; X{term} ; V{unique atom} |- forall(V, P)[X -> V]
     show
         forall(y, eq(y, add(y, c(zero))))
     proof
@@ -163,9 +163,11 @@ a variable name and say something silly like `forall(zero, ...)`.
 
 All bugs are creepy and all bugs are crawly therefore all bugs are both creepy and crawly.
 
-Note that the atom introduced as the variable in the UI need *not* be unique, because if
+Note that the term introduced as the variable in the UI need *not* be unique, because if
 something is true for all `x`, it is true for *all* `x`, even if `x` is something else
 you've already been thinking about and given the name `x`.
+
+Note that it also need not be an atom.
 
     given
         Modus_Ponens             = impl(P, Q)    ; P             |- Q
@@ -177,8 +179,8 @@ you've already been thinking about and given the name `x`.
             end
         end
     
-        Universal_Generalization = P ; X{atom} ; V{unique atom}  |- forall(V, P)[X -> V]
-        Universal_Instantiation  = forall(X, P) ; V{atom}        |- P[X -> V]
+        Universal_Generalization = P ; X{term} ; V{unique atom}  |- forall(V, P)[X -> V]
+        Universal_Instantiation  = forall(X, P) ; V{term}        |- P[X -> V]
     
         Premise_1                = |- forall(x, impl(bug(x), creepy(x)))
         Premise_2                = |- forall(x, impl(bug(x), crawly(x)))
@@ -210,8 +212,8 @@ Again, the new variable name introduced into the `exists` must be unique to avoi
 scope problems.
 
     given
-        Universal_Instantiation    = forall(X, P) ; V{atom}       |- P[X -> V]
-        Existential_Generalization = P ; X{atom} ; V{unique atom} |- exists(V, P)[X -> V]
+        Universal_Instantiation    = forall(X, P) ; V{term}       |- P[X -> V]
+        Existential_Generalization = P ; X{term} ; V{unique atom} |- exists(V, P)[X -> V]
     
         Premise                    = |- forall(x, impl(bug(x), creepy(x)))
     show
@@ -238,8 +240,8 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
         Simplification_Right       = and(P, Q)                           |- Q
         Tautology                  = P                                   |- P
     
-        Universal_Instantiation    = forall(X, P) ; V{atom}              |- P[X -> V]
-        Existential_Generalization = P ;  X{atom} ; V{unique atom}       |- exists(V, P)[X -> V]
+        Universal_Instantiation    = forall(X, P) ; V{term}              |- P[X -> V]
+        Existential_Generalization = P ;  X{term} ; V{unique atom}       |- exists(V, P)[X -> V]
         block Existential_Instantiation
             case
                 Let                = exists(X, P) ; V{unique local atom} |- P[X -> V]
@@ -271,15 +273,15 @@ scope problems, and local, to prevent the name from "leaking out" of the EI bloc
     ===> ok
 
 For comparison, here are all of the rules for Universal (resp. Existential)
-Generalization (resp. Instantiation) shown together in one place:
+Generalization (resp. Instantiation) shown together in one place, with abbreviated names:
 
-    Universal_Generalization   = P ;  X{atom} ; V{unique atom}       |- forall(V, P)[X -> V]
-    Universal_Instantiation    = forall(X, P) ; V{atom}              |- P[X -> V]
-    Existential_Generalization = P ;  X{atom} ; V{unique atom}       |- exists(V, P)[X -> V]
-    block Existential_Instantiation
+    UG           = P ;  X{term} ; V{unique atom}       |- forall(V, P)[X -> V]
+    UI           = forall(X, P) ; V{term}              |- P[X -> V]
+    EG           = P ;  X{term} ; V{unique atom}       |- exists(V, P)[X -> V]
+    block EI
         case
-            Let                = exists(X, P) ; V{unique local atom} |- P[X -> V]
-            Then               = P                                   |- P
+            Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
+            Then = P                                   |- P
         end
     end
 

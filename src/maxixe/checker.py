@@ -72,7 +72,7 @@ class Checker(object):
         with_terms = []
         for (hypothesis, with_) in zip(rule.hypotheses, step.with_):
             if hypothesis.has_attribute('atom'):
-                assert with_.is_atom(), "argument is not an atom"
+                assert with_.is_atom(), "argument '%s' to hypothesis '%s' is not an atom" % (with_, hypothesis)
                 hypothesis.term.match(with_, unifier)
                 with_term = with_
                 if hypothesis.has_attribute('local'):
@@ -87,7 +87,11 @@ class Checker(object):
                 if from_level > level:
                     if not from_block.has_as_last_step(with_step):
                         raise ValueError('%s is a non-final step in an inner block' % with_.name)
-                hypothesis.term.match(with_step.term, unifier)
+                try:
+                    hypothesis.term.match(with_step.term, unifier)
+                except ValueError as e:
+                    unifier_str = ", ".join(["%s -> %s" % (k, v) for k, v in unifier.iteritems()])
+                    raise ValueError("In %s, could not match '%s' with '%s' with unifier '%s': %s" % (step.var.name, hypothesis.term, with_step.term, unifier_str, e))
                 with_term = with_step.term
             with_terms.append(with_term)
             if hypothesis.has_attribute('unique'):
