@@ -331,10 +331,6 @@ Number Theory
 
 If y is odd, then y+1 is even.
 
-The variable names used here are kind of painful, in order to avoid name clashes.
-Perhaps the new variable introduced in UG and EG doesn't have to be unique?
-As long as it's not the same as any atom already in P.  (This sounds familiar.)
-
     given
         UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
         UI           = forall(X, P) ; V{term}              |- P[X -> V]
@@ -356,7 +352,7 @@ As long as it's not the same as any atom already in P.  (This sounds familiar.)
             end
         end
     
-        Defn_of_Even = |- forall(n, biimpl(even(n), exists(m, eq(n, add(m, m)))))
+        Defn_of_Even = |- forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))
         Defn_of_Odd  = |- forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))
     
         Add_One_to_Both_Sides = eq(X, Y)                         |- eq(add(X, c(1)), add(Y, c(1)))
@@ -377,11 +373,11 @@ As long as it's not the same as any atom already in P.  (This sounds familiar.)
                         Step_6 = eq(x, add(add(j, j), c(1)))                                 by Let with Step_5, j
                         Step_7 = eq(add(x, c(1)), add(add(add(j, j), c(1)), c(1)))           by Add_One_to_Both_Sides with Step_6
                         Step_8 = eq(add(x, c(1)), add(add(j, c(1)), add(j, c(1))))           by Provisional_Algebra with Step_7
-                        Step_9 = exists(m, eq(add(x, c(1)), add(m, m)))                      by EG with Step_8, add(j, c(1)), m
+                        Step_9 = exists(k, eq(add(x, c(1)), add(k, k)))                      by EG with Step_8, add(j, c(1)), k
                         
-                        Step_10 = forall(n, biimpl(even(n), exists(m, eq(n, add(m, m)))))             by Defn_of_Even
-                        Step_11 = biimpl(even(add(x, c(1))), exists(m, eq(add(x, c(1)), add(m, m))))  by UI with Step_10, add(x, c(1))
-                        Step_12 = impl(exists(m, eq(add(x, c(1)), add(m, m))), even(add(x, c(1))))    by Reverse_Weakening with Step_11
+                        Step_10 = forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))             by Defn_of_Even
+                        Step_11 = biimpl(even(add(x, c(1))), exists(k, eq(add(x, c(1)), add(k, k))))  by UI with Step_10, add(x, c(1))
+                        Step_12 = impl(exists(k, eq(add(x, c(1)), add(k, k))), even(add(x, c(1))))    by Reverse_Weakening with Step_11
                         Step_13 = even(add(x, c(1)))                                                  by Modus_Ponens with Step_9, Step_12
                     end
                 end
