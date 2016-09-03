@@ -37,7 +37,7 @@ Here are some things which are *not* goals of Maxixe:
 ### How well are these goals met? ###
 
 *   **Simplicity**: as of this writing, the reference implementation of Maxixe, in Python, is
-    about 600 lines of code.  About 250 lines of that is the parser and scanner.  Another 200
+    about 650 lines of code.  About 250 lines of that is the parser and scanner.  Another 250
     is the AST and term (matching, replacing) infrastructure.
 
 *   **Familiarity**: aside from the term language (meaning, you have to say `impl(A,B)` instead
@@ -53,10 +53,11 @@ Here are some things which are *not* goals of Maxixe:
     the proof language, we have coded constraints on hypotheses and conclusions which
     allow rules like EI to be written.
 
-*   **Predicate Logic**: see the Generality point above.  It's getting there.
-
+*   **Predicate Logic**: see the Generality point above.  It's probably close, but I wouldn't
+    put money on it quite yet.
+    
 *   **Correctness**: see the Disclaimer in the README.  It's probably close, but I wouldn't
-    put money on it.
+    put money on it quite yet.
 
 Related Work
 ------------

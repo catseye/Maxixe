@@ -192,7 +192,7 @@ like instantiating ∀x.∃y.x≠y with y, to obtain ∃y.y≠y.
         Premise_1                = |- forall(x, impl(bug(x), creepy(x)))
         Premise_2                = |- forall(x, impl(bug(x), crawly(x)))
     show
-        forall(k, impl(bug(k), and(creepy(k), crawly(k))))
+        forall(x, impl(bug(x), and(creepy(x), crawly(x))))
     proof
         Step_1 = forall(x, impl(bug(x), creepy(x)))                   by Premise_1
         Step_2 = impl(bug(y), creepy(y))                              by Universal_Instantiation with Step_1, y
@@ -207,9 +207,33 @@ like instantiating ∀x.∃y.x≠y with y, to obtain ∃y.y≠y.
                 Step_9 = impl(bug(y), and(creepy(y), crawly(y)))      by Conclusion with Step_5, Step_8
             end
         end
-        Step_10 = forall(k, impl(bug(k), and(creepy(k), crawly(k))))  by Universal_Generalization with Step_9, y, k
+        Step_10 = forall(x, impl(bug(x), and(creepy(x), crawly(x))))  by Universal_Generalization with Step_9, y, x
     qed
     ===> ok
+
+About that gratuitous variable name restriction in the previous example.
+What if we really did want to show `forall(x, eq(x, add(x, c(zero))))`?
+Can we do it with an instantiation step?
+
+    given
+        Premise                  =                               |- eq(add(x, c(zero)), x)
+        Commutivity_of_Equality  = eq(E1, E0)                    |- impl(eq(E1, E0), eq(E0, E1))
+        Modus_Ponens             = P0 ; impl(P0, P1)             |- P1
+        Universal_Generalization = P  ; X{term} ; V{atom}        |- forall(V, P[X -> V])
+        Universal_Instantiation  = forall(X, P) ; V{term}        |- P[X -> V]
+    show
+        forall(x, eq(x, add(x, c(zero))))
+    proof
+        Step_1 = eq(add(x, c(zero)), x)                                 by Premise
+        Step_2 = impl(eq(add(x, c(zero)), x), eq(x, add(x, c(zero))))   by Commutivity_of_Equality with Step_1
+        Step_3 = eq(x, add(x, c(zero)))                                 by Modus_Ponens with Step_1, Step_2
+        Step_4 = forall(y, eq(y, add(y, c(zero))))                      by Universal_Generalization with Step_3, x, y
+        Step_5 = eq(z, add(z, c(zero)))                                 by Universal_Instantiation with Step_4, z
+        Step_6 = forall(x, eq(x, add(x, c(zero))))                      by Universal_Generalization with Step_5, z, x
+    qed
+    ===> ok
+
+Yes.
 
 ### Existential Generalization (EG) ###
 
@@ -226,18 +250,18 @@ Like always with `[X -> V]`, an occurs check occurs.  Not sure if necessary atm.
     
         Premise                    = |- forall(x, impl(bug(x), creepy(x)))
     show
-        exists(k, impl(bug(k), creepy(k)))
+        exists(x, impl(bug(x), creepy(x)))
     proof
         Step_1 = forall(x, impl(bug(x), creepy(x)))                   by Premise
         Step_2 = impl(bug(j), creepy(j))                              by Universal_Instantiation with Step_1, j
-        Step_3 = exists(k, impl(bug(k), creepy(k)))                   by Existential_Generalization with Step_2, j, k
+        Step_3 = exists(x, impl(bug(x), creepy(x)))                   by Existential_Generalization with Step_2, j, x
     qed
     ===> ok
 
 ### Existential Instantiation (EI) ###
 
-All men are mortal.  There exists a man named Socrates.  Therefore there exists a man who is mortal
-and who is named Socrates.
+All men are mortal.  There exists a man who is Socrates.  Therefore there exists a man who is mortal
+and who is Socrates, i.e. Socrates is mortal.
 
 Very unlike UI, to avoid scoping problems, the new variable name introduced during EI needs to be:
 
@@ -267,7 +291,7 @@ like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
         Premise_1                 = |- forall(x, impl(man(x), mortal(x)))
         Premise_2                 = |- exists(x, and(man(x), socrates(x)))
     show
-        exists(y, and(mortal(y), socrates(y)))
+        exists(x, and(mortal(x), socrates(x)))
     proof
         Step_1 = forall(x, impl(man(x), mortal(x)))               by Premise_1
         Step_2 = exists(x, and(man(x), socrates(x)))              by Premise_2
@@ -279,10 +303,10 @@ like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
                 Step_7 = mortal(k)                                by Modus_Ponens with Step_6, Step_5
                 Step_8 = socrates(k)                              by Simplification_Right with Step_4
                 Step_9 = and(mortal(k), socrates(k))              by Conjunction with Step_7, Step_8
-                Step_10 = exists(y, and(mortal(y), socrates(y)))  by Existential_Generalization with Step_9, k, y
+                Step_10 = exists(x, and(mortal(x), socrates(x)))  by Existential_Generalization with Step_9, k, x
             end
         end
-        Step_11 = exists(y, and(mortal(y), socrates(y)))          by Tautology with Step_10
+        Step_11 = exists(x, and(mortal(x), socrates(x)))          by Tautology with Step_10
     qed
     ===> ok
 
