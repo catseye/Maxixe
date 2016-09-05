@@ -410,6 +410,8 @@ the second rule, if given, must be used in the final step of the case.
     qed
     ===> ok
 
+If the second rule is not given, no restriction is placed on the final step of the case.
+
     given
         A =   |- a
         block Subproof
@@ -428,6 +430,30 @@ the second rule, if given, must be used in the final step of the case.
                 S2 = b by B with S1
                 S3 = c by C with S2
             end
+        end
+        S4 = d by D with S3
+    qed
+    ===> ok
+
+As an act of syntactic sugar, if a block contains only one case, the `case` ... `end`
+may be omitted (in the proof, but not in the rule definition.)
+
+    given
+        A =   |- a
+        block Subproof
+            case
+                B = a |- b
+            end
+        end
+        C = b |- c
+        D = c |- d
+    show
+        d
+    proof
+        S1 = a by A
+        block Subproof
+            S2 = b by B with S1
+            S3 = c by C with S2
         end
         S4 = d by D with S3
     qed

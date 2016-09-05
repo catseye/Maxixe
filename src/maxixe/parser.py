@@ -11,7 +11,7 @@ from maxixe.scanner import Scanner
 # BlockRuleCase ::= "case" Rule [Rule] "end".
 # Hyp           ::= Term Attributes.
 # Attributes    ::= ["{" {Atom} "}"].
-# Block         ::= "block" Var {BlockCase} "end".
+# Block         ::= "block" Var ({BlockCase} | {Step | Block}) "end".
 # BlockCase     ::= "case" {Step | Block} "end".
 # Step          ::= Var "=" Term "by" Var ["with" Term {"," Term}].
 # Term          ::= Var | Atom ["(" Term {"," Term} ")"] ["[" Subst {"," Subst} "]"].
@@ -111,8 +111,17 @@ class Parser(object):
         prev_block = self.current_block
         block = Block(name=name, cases=cases, level=level)
         self.current_block = block
-        while self.scanner.on('case'):
-            cases.append(self.block_case(level))
+        if self.scanner.on('case'):
+            while self.scanner.on('case'):
+                cases.append(self.block_case(level))
+        else:
+            steps = []
+            while not self.scanner.on('end'):
+                if self.scanner.on('block'):
+                    steps.append(self.block(level + 1))
+                else:
+                    steps.append(self.step())
+            cases.append(BlockCase(steps=steps))
         self.scanner.expect('end')
         self.current_block = prev_block
         return block

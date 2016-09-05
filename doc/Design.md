@@ -8,7 +8,7 @@ Maxixe's design goals are:
 
 *   **Simplicity**: the implementation should be simple.  Re-implementing Maxixe in a
     different host language should be a conceivable weekend project.
-    
+
 *   **Familiarity**: proofs should look more or less like "classical" proofs which
     consist of a list of steps and the justification for each step.
 
@@ -37,8 +37,8 @@ Here are some things which are *not* goals of Maxixe:
 ### How well are these goals met? ###
 
 *   **Simplicity**: as of this writing, the reference implementation of Maxixe, in Python, is
-    about 650 lines of code.  About 250 lines of that is the parser and scanner.  Another 250
-    is the AST and term (matching, replacing) infrastructure.
+    less than 700 lines of code.  About 250 lines of that is the parser and scanner.  The AST
+    AST and term (matching, replacing) infrastructure occupy around another 250 lines.
 
 *   **Familiarity**: aside from the term language (meaning, you have to say `impl(A,B)` instead
     of `A→B`), the layout of a proof is fairly classical.  A proof consists of a set of
@@ -55,7 +55,7 @@ Here are some things which are *not* goals of Maxixe:
 
 *   **Predicate Logic**: see the Generality point above.  It's probably close, but I wouldn't
     put money on it quite yet.
-    
+
 *   **Correctness**: see the Disclaimer in the README.  It's probably close, but I wouldn't
     put money on it quite yet.
 

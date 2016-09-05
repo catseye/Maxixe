@@ -72,13 +72,11 @@ A proof that from a→(b→c) and a→b and d, we can conclude (a→c)^d.
         Step_2 = impl(a, b)            by Premise_2
         Step_3 = d                     by Premise_3
         block Suppose
-            case
-                Step_4 = a             by Supposition with a
-                Step_5 = impl(b, c)    by Modus_Ponens with Step_1, Step_4
-                Step_6 = b             by Modus_Ponens with Step_2, Step_4
-                Step_7 = c             by Modus_Ponens with Step_5, Step_6
-                Step_8 = impl(a, c)    by Conclusion with Step_4, Step_7
-            end
+            Step_4 = a                 by Supposition with a
+            Step_5 = impl(b, c)        by Modus_Ponens with Step_1, Step_4
+            Step_6 = b                 by Modus_Ponens with Step_2, Step_4
+            Step_7 = c                 by Modus_Ponens with Step_5, Step_6
+            Step_8 = impl(a, c)        by Conclusion with Step_4, Step_7
         end
         Step_9 = and(impl(a, c), d)    by Conjunction with Step_8, Step_3
     qed
@@ -199,13 +197,11 @@ like instantiating ∀x.∃y.x≠y with y, to obtain ∃y.y≠y.
         Step_3 = forall(x, impl(bug(x), crawly(x)))                   by Premise_2
         Step_4 = impl(bug(y), crawly(y))                              by Universal_Instantiation with Step_3, y
         block Suppose
-            case
-                Step_5 = bug(y)                                       by Supposition with bug(y)
-                Step_6 = creepy(y)                                    by Modus_Ponens with Step_2, Step_5
-                Step_7 = crawly(y)                                    by Modus_Ponens with Step_4, Step_5
-                Step_8 = and(creepy(y), crawly(y))                    by Conjunction with Step_6, Step_7
-                Step_9 = impl(bug(y), and(creepy(y), crawly(y)))      by Conclusion with Step_5, Step_8
-            end
+            Step_5 = bug(y)                                           by Supposition with bug(y)
+            Step_6 = creepy(y)                                        by Modus_Ponens with Step_2, Step_5
+            Step_7 = crawly(y)                                        by Modus_Ponens with Step_4, Step_5
+            Step_8 = and(creepy(y), crawly(y))                        by Conjunction with Step_6, Step_7
+            Step_9 = impl(bug(y), and(creepy(y), crawly(y)))          by Conclusion with Step_5, Step_8
         end
         Step_10 = forall(x, impl(bug(x), and(creepy(x), crawly(x))))  by Universal_Generalization with Step_9, y, x
     qed
@@ -296,15 +292,13 @@ like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
         Step_1 = forall(x, impl(man(x), mortal(x)))               by Premise_1
         Step_2 = exists(x, and(man(x), socrates(x)))              by Premise_2
         block Existential_Instantiation
-            case
-                Step_4 = and(man(k), socrates(k))                 by Let with Step_2, k
-                Step_5 = man(k)                                   by Simplification_Left with Step_4
-                Step_6 = impl(man(k), mortal(k))                  by Universal_Instantiation with Step_1, k
-                Step_7 = mortal(k)                                by Modus_Ponens with Step_6, Step_5
-                Step_8 = socrates(k)                              by Simplification_Right with Step_4
-                Step_9 = and(mortal(k), socrates(k))              by Conjunction with Step_7, Step_8
-                Step_10 = exists(x, and(mortal(x), socrates(x)))  by Existential_Generalization with Step_9, k, x
-            end
+            Step_4 = and(man(k), socrates(k))                     by Let with Step_2, k
+            Step_5 = man(k)                                       by Simplification_Left with Step_4
+            Step_6 = impl(man(k), mortal(k))                      by Universal_Instantiation with Step_1, k
+            Step_7 = mortal(k)                                    by Modus_Ponens with Step_6, Step_5
+            Step_8 = socrates(k)                                  by Simplification_Right with Step_4
+            Step_9 = and(mortal(k), socrates(k))                  by Conjunction with Step_7, Step_8
+            Step_10 = exists(x, and(mortal(x), socrates(x)))      by Existential_Generalization with Step_9, k, x
         end
         Step_11 = exists(x, and(mortal(x), socrates(x)))          by Tautology with Step_10
     qed
@@ -386,29 +380,25 @@ If y is odd, then y+1 is even.
         forall(y, impl(odd(y), even(add(y, c(1)))))
     proof
         block Suppose
-            case
-                Step_1 = odd(x)                                                              by Supposition with odd(x)
-                Step_2 = forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))   by Defn_of_Odd
-                Step_3 = biimpl(odd(x), exists(k, eq(x, add(add(k, k), c(1)))))              by UI with Step_2, x
-                Step_4 = impl(odd(x), exists(k, eq(x, add(add(k, k), c(1)))))                by Weakening with Step_3
-                Step_5 = exists(k, eq(x, add(add(k, k), c(1))))                              by Modus_Ponens with Step_1, Step_4
-                block EI
-                    case
-                        Step_6 = eq(x, add(add(j, j), c(1)))                                 by Let with Step_5, j
-                        Step_7 = eq(add(x, c(1)), add(add(add(j, j), c(1)), c(1)))           by Add_One_to_Both_Sides with Step_6
-                        Step_8 = eq(add(x, c(1)), add(add(j, c(1)), add(j, c(1))))           by Provisional_Algebra with Step_7
-                        Step_9 = exists(k, eq(add(x, c(1)), add(k, k)))                      by EG with Step_8, add(j, c(1)), k
-                        
-                        Step_10 = forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))             by Defn_of_Even
-                        Step_11 = biimpl(even(add(x, c(1))), exists(k, eq(add(x, c(1)), add(k, k))))  by UI with Step_10, add(x, c(1))
-                        Step_12 = impl(exists(k, eq(add(x, c(1)), add(k, k))), even(add(x, c(1))))    by Reverse_Weakening with Step_11
-                        Step_13 = even(add(x, c(1)))                                                  by Modus_Ponens with Step_9, Step_12
-                    end
-                end
-                Step_14 = impl(odd(x), even(add(x, c(1))))       by Conclusion with Step_1, Step_13
+            Step_1 = odd(x)                                                              by Supposition with odd(x)
+            Step_2 = forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))   by Defn_of_Odd
+            Step_3 = biimpl(odd(x), exists(k, eq(x, add(add(k, k), c(1)))))              by UI with Step_2, x
+            Step_4 = impl(odd(x), exists(k, eq(x, add(add(k, k), c(1)))))                by Weakening with Step_3
+            Step_5 = exists(k, eq(x, add(add(k, k), c(1))))                              by Modus_Ponens with Step_1, Step_4
+            block EI
+                Step_6 = eq(x, add(add(j, j), c(1)))                                     by Let with Step_5, j
+                Step_7 = eq(add(x, c(1)), add(add(add(j, j), c(1)), c(1)))               by Add_One_to_Both_Sides with Step_6
+                Step_8 = eq(add(x, c(1)), add(add(j, c(1)), add(j, c(1))))               by Provisional_Algebra with Step_7
+                Step_9 = exists(k, eq(add(x, c(1)), add(k, k)))                          by EG with Step_8, add(j, c(1)), k
+                
+                Step_10 = forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))             by Defn_of_Even
+                Step_11 = biimpl(even(add(x, c(1))), exists(k, eq(add(x, c(1)), add(k, k))))  by UI with Step_10, add(x, c(1))
+                Step_12 = impl(exists(k, eq(add(x, c(1)), add(k, k))), even(add(x, c(1))))    by Reverse_Weakening with Step_11
+                Step_13 = even(add(x, c(1)))                                                  by Modus_Ponens with Step_9, Step_12
             end
+            Step_14 = impl(odd(x), even(add(x, c(1))))                   by Conclusion with Step_1, Step_13
         end
-        Step_15 = forall(y, impl(odd(y), even(add(y, c(1)))))    by UG with Step_14, x, y
+        Step_15 = forall(y, impl(odd(y), even(add(y, c(1)))))            by UG with Step_14, x, y
     qed
     ===> ok
 
@@ -448,40 +438,34 @@ The sum of an odd number and an odd number is an even number.
         forall(x, forall(y, impl(and(odd(x), odd(y)), even(add(x, y)))))
     proof
         block Suppose
-            case
-                Step_1 = and(odd(x0), odd(y0))                                               by Supposition with and(odd(x0), odd(y0))
-                Step_2 = odd(x0)                                                             by Simplification_Left with Step_1
-                Step_3 = odd(y0)                                                             by Simplification_Right with Step_1
-                Step_4 = forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))   by Defn_of_Odd
-                Step_5 = biimpl(odd(x0), exists(k, eq(x0, add(add(k, k), c(1)))))            by UI with Step_4, x0
-                Step_6 = impl(odd(x0), exists(k, eq(x0, add(add(k, k), c(1)))))              by Weakening with Step_5
-                Step_7 = exists(k, eq(x0, add(add(k, k), c(1))))                             by Modus_Ponens with Step_2, Step_6
-                Step_8 = biimpl(odd(y0), exists(k, eq(y0, add(add(k, k), c(1)))))            by UI with Step_4, y0
-                Step_9 = impl(odd(y0), exists(k, eq(y0, add(add(k, k), c(1)))))              by Weakening with Step_8
-                Step_10 = exists(k, eq(y0, add(add(k, k), c(1))))                            by Modus_Ponens with Step_3, Step_9
+            Step_1 = and(odd(x0), odd(y0))                                               by Supposition with and(odd(x0), odd(y0))
+            Step_2 = odd(x0)                                                             by Simplification_Left with Step_1
+            Step_3 = odd(y0)                                                             by Simplification_Right with Step_1
+            Step_4 = forall(n, biimpl(odd(n), exists(k, eq(n, add(add(k, k), c(1))))))   by Defn_of_Odd
+            Step_5 = biimpl(odd(x0), exists(k, eq(x0, add(add(k, k), c(1)))))            by UI with Step_4, x0
+            Step_6 = impl(odd(x0), exists(k, eq(x0, add(add(k, k), c(1)))))              by Weakening with Step_5
+            Step_7 = exists(k, eq(x0, add(add(k, k), c(1))))                             by Modus_Ponens with Step_2, Step_6
+            Step_8 = biimpl(odd(y0), exists(k, eq(y0, add(add(k, k), c(1)))))            by UI with Step_4, y0
+            Step_9 = impl(odd(y0), exists(k, eq(y0, add(add(k, k), c(1)))))              by Weakening with Step_8
+            Step_10 = exists(k, eq(y0, add(add(k, k), c(1))))                            by Modus_Ponens with Step_3, Step_9
+            block EI
+                Step_11 = eq(x0, add(add(k0, k0), c(1)))                                 by Let with Step_7, k0
                 block EI
-                    case
-                        Step_11 = eq(x0, add(add(k0, k0), c(1)))                             by Let with Step_7, k0
-                        block EI
-                            case
-                                Step_12 = eq(y0, add(add(k1, k1), c(1)))                     by Let with Step_10, k1
-                                Step_13 = eq(add(x0, y0), add(add(add(k0, k0), c(1)), add(add(k1, k1), c(1))))
-                                                                                             by Addition_Both_Sides with Step_11, Step_12
-                                Step_14 = eq(add(x0, y0), add(add(add(k0, k1), c(1)), add(add(k0, k1), c(1))))
-                                                                                             by Provisional_Algebra with Step_13
-                                Step_15 = exists(k, eq(add(x0, y0), add(k, k)))              by EG with Step_14, add(add(k0, k1), c(1)), k
-                            end
-                        end
-                        Step_16 = forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))           by Defn_of_Even
-                        Step_17 = biimpl(even(add(x0, y0)), exists(k, eq(add(x0, y0), add(k, k))))  by UI with Step_16, add(x0, y0)
-                        Step_18 = impl(exists(k, eq(add(x0, y0), add(k, k))), even(add(x0, y0)))    by Reverse_Weakening with Step_17
-                        Step_19 = even(add(x0, y0))                                                 by Modus_Ponens with Step_15, Step_18
-                    end
+                    Step_12 = eq(y0, add(add(k1, k1), c(1)))                             by Let with Step_10, k1
+                    Step_13 = eq(add(x0, y0), add(add(add(k0, k0), c(1)), add(add(k1, k1), c(1))))
+                                                                                         by Addition_Both_Sides with Step_11, Step_12
+                    Step_14 = eq(add(x0, y0), add(add(add(k0, k1), c(1)), add(add(k0, k1), c(1))))
+                                                                                         by Provisional_Algebra with Step_13
+                    Step_15 = exists(k, eq(add(x0, y0), add(k, k)))                      by EG with Step_14, add(add(k0, k1), c(1)), k
                 end
-                Step_20 = impl(and(odd(x0), odd(y0)), even(add(x0, y0)))                     by Conclusion with Step_1, Step_19
+                Step_16 = forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))           by Defn_of_Even
+                Step_17 = biimpl(even(add(x0, y0)), exists(k, eq(add(x0, y0), add(k, k))))  by UI with Step_16, add(x0, y0)
+                Step_18 = impl(exists(k, eq(add(x0, y0), add(k, k))), even(add(x0, y0)))    by Reverse_Weakening with Step_17
+                Step_19 = even(add(x0, y0))                                                 by Modus_Ponens with Step_15, Step_18
             end
+            Step_20 = impl(and(odd(x0), odd(y0)), even(add(x0, y0)))                     by Conclusion with Step_1, Step_19
         end
-        Step_21 = forall(y, impl(and(odd(x0), odd(y)), even(add(x0, y))))                    by UG with Step_20, y0, y
-        Step_22 = forall(x, forall(y, impl(and(odd(x), odd(y)), even(add(x, y)))))           by UG with Step_21, x0, x
+        Step_21 = forall(y, impl(and(odd(x0), odd(y)), even(add(x0, y))))                by UG with Step_20, y0, y
+        Step_22 = forall(x, forall(y, impl(and(odd(x), odd(y)), even(add(x, y)))))       by UG with Step_21, x0, x
     qed
     ===> ok
