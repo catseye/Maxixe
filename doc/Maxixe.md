@@ -436,14 +436,12 @@ If the second rule is not given, no restriction is placed on the final step of t
     ===> ok
 
 As an act of syntactic sugar, if a block contains only one case, the `case` ... `end`
-may be omitted (in the proof, but not in the rule definition.)
+may be omitted, both in the proof, and in the rule definition.
 
     given
         A =   |- a
         block Subproof
-            case
-                B = a |- b
-            end
+            B = a |- b
         end
         C = b |- c
         D = c |- d

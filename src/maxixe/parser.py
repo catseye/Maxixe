@@ -7,7 +7,7 @@ from maxixe.scanner import Scanner
 
 # Proof         ::= "given" {Rule | BlockRule} "show" Term "proof" {Step | Block} "qed".
 # Rule          ::= Var Attributes "=" [Hyp {";" Hyp}] "|-" Term.
-# BlockRule     ::= "block" Var {BlockRuleCase} "end".
+# BlockRule     ::= "block" Var ({BlockRuleCase} | Rule [Rule]) "end".
 # BlockRuleCase ::= "case" Rule [Rule] "end".
 # Hyp           ::= Term Attributes.
 # Attributes    ::= ["{" {Atom} "}"].
@@ -72,7 +72,12 @@ class Parser(object):
         cases = []
         self.scanner.expect('block')
         name = self.var()
-        while self.scanner.on('case'):
+        if self.scanner.on('case'):
+            while self.scanner.on('case'):
+                self.scanner.expect('case')
+                cases.append(self.block_rule_case())
+                self.scanner.expect('end')
+        else:
             cases.append(self.block_rule_case())
         self.scanner.expect('end')
         block_rule = BlockRule(name=name, cases=cases)
@@ -80,13 +85,10 @@ class Parser(object):
         return block_rule
 
     def block_rule_case(self):
-        cases = []
-        self.scanner.expect('case')
         initial = self.rule()
         final = None
         if not self.scanner.on('end'):
             final = self.rule()
-        self.scanner.expect('end')
         return BlockRuleCase(initial=initial, final=final)
 
     def hyp(self):
@@ -113,28 +115,22 @@ class Parser(object):
         self.current_block = block
         if self.scanner.on('case'):
             while self.scanner.on('case'):
+                self.scanner.expect('case')
                 cases.append(self.block_case(level))
+                self.scanner.expect('end')
         else:
-            steps = []
-            while not self.scanner.on('end'):
-                if self.scanner.on('block'):
-                    steps.append(self.block(level + 1))
-                else:
-                    steps.append(self.step())
-            cases.append(BlockCase(steps=steps))
+            cases.append(self.block_case(level))
         self.scanner.expect('end')
         self.current_block = prev_block
         return block
 
     def block_case(self, level):
         steps = []
-        self.scanner.expect('case')
         while not self.scanner.on('end'):
             if self.scanner.on('block'):
                 steps.append(self.block(level + 1))
             else:
                 steps.append(self.step())
-        self.scanner.expect('end')
         return BlockCase(steps=steps)
 
     def step(self):

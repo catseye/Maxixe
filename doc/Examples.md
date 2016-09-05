@@ -56,10 +56,8 @@ A proof that from a→(b→c) and a→b and d, we can conclude (a→c)^d.
         Modus_Ponens           = impl(P, Q) ; P |- Q
         Conjunction            = P          ; Q |- and(P, Q)
         block Suppose
-            case
-                Supposition    = A{term}        |- A
-                Conclusion     = P ; Q          |- impl(P, Q)
-            end
+            Supposition        = A{term}        |- A
+            Conclusion         = P ; Q          |- impl(P, Q)
         end
     
         Premise_1              =                |- impl(a, impl(b, c))
@@ -178,10 +176,8 @@ like instantiating ∀x.∃y.x≠y with y, to obtain ∃y.y≠y.
         Modus_Ponens             = impl(P, Q)    ; P             |- Q
         Conjunction              = P             ; Q             |- and(P, Q)
         block Suppose
-            case
-                Supposition    = A{term}        |- A
-                Conclusion     = P ; Q          |- impl(P, Q)
-            end
+            Supposition          = A{term}        |- A
+            Conclusion           = P ; Q          |- impl(P, Q)
         end
     
         Universal_Generalization = P ; X{term} ; V{atom}         |- forall(V, P[X -> V])
@@ -279,9 +275,7 @@ like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
         Universal_Instantiation    = forall(X, P) ; V{term}              |- P[X -> V]
         Existential_Generalization = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
         block Existential_Instantiation
-            case
-                Let                = exists(X, P) ; V{unique local atom} |- P[X -> V]
-            end
+            Let                    = exists(X, P) ; V{unique local atom} |- P[X -> V]
         end
     
         Premise_1                 = |- forall(x, impl(man(x), mortal(x)))
@@ -311,9 +305,7 @@ Generalization (resp. Instantiation) shown together in one place, with abbreviat
     UI           = forall(X, P) ; V{term}              |- P[X -> V]
     EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
     block EI
-        case
-            Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
-        end
+        Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
     end
 
 Equational Reasoning
@@ -354,9 +346,7 @@ If y is odd, then y+1 is even.
         UI           = forall(X, P) ; V{term}              |- P[X -> V]
         EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
         block EI
-            case
-                Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
-            end
+            Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
         end
     
         Weakening            = biimpl(X, Y)   |- impl(X, Y)
@@ -364,10 +354,8 @@ If y is odd, then y+1 is even.
         Modus_Ponens         = P ; impl(P, Q) |- Q
     
         block Suppose
-            case
-                Supposition    = A{term}        |- A
-                Conclusion     = P ; Q          |- impl(P, Q)
-            end
+            Supposition      = A{term}        |- A
+            Conclusion       = P ; Q          |- impl(P, Q)
         end
     
         Defn_of_Even = |- forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))
@@ -409,9 +397,7 @@ The sum of an odd number and an odd number is an even number.
         UI           = forall(X, P) ; V{term}              |- P[X -> V]
         EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
         block EI
-            case
-                Let  = exists(X, P) ; V{unique local atom} |- P[X -> V]
-            end
+            Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
         end
     
         Weakening            = biimpl(X, Y)   |- impl(X, Y)
@@ -422,10 +408,8 @@ The sum of an odd number and an odd number is an even number.
         Tautology            = P              |- P
     
         block Suppose
-            case
-                Supposition    = A{term}        |- A
-                Conclusion     = P ; Q          |- impl(P, Q)
-            end
+            Supposition      = A{term}        |- A
+            Conclusion       = P ; Q          |- impl(P, Q)
         end
     
         Defn_of_Even = |- forall(n, biimpl(even(n), exists(k, eq(n, add(k, k)))))
