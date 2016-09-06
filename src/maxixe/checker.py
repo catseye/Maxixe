@@ -89,9 +89,7 @@ class Checker(object):
                 with_term = with_
             else:
                 with_step, from_block = self.proof.find_step_and_block(with_.name)
-                level = 0 if block is None else block.level
-                from_level = 0 if from_block is None else from_block.level
-                if from_level > level:
+                if from_block.level > block.level:
                     if not from_block.has_as_last_step(with_step):
                         self.step_error('%s is a non-final step in an inner block' % with_.name)
                 try:

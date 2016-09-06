@@ -28,13 +28,6 @@ class Proof(AST):
     def find_step_and_block(self, step_name):
         return self.step_map[step_name]
 
-    def has_as_last_step(self, step):
-        candidate_step = self.steps[-1]
-        if isinstance(candidate_step, Block):
-            return candidate_step.has_as_last_step(step)
-        else:
-            return candidate_step == step
-
 
 class Rule(AST):
     pass
@@ -67,16 +60,8 @@ class Block(AST):
 
 class BlockCase(AST):
     def has_as_last_step(self, step):
-        candidate_step = self.steps[-1]
-        if isinstance(candidate_step, Block):  # this should never actually happen
-            return candidate_step.has_as_last_step(step)
-        else:
-            return candidate_step == step
+        return step == self.steps[-1]
 
 
 class Step(AST):
-    def is_first_step_in(self, block):
-        return block.steps[0] == self
-
-    def is_last_step_in(self, block):
-        return block.steps[-1] == self
+    pass
