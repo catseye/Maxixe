@@ -278,23 +278,23 @@ like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
             Let                    = exists(X, P) ; V{unique local atom} |- P[X -> V]
         end
     
-        Premise_1                 = |- forall(x, impl(man(x), mortal(x)))
-        Premise_2                 = |- exists(x, and(man(x), socrates(x)))
+        Premise_1                  = |- forall(x, impl(man(x), mortal(x)))
+        Premise_2                  = |- exists(x, and(man(x), socrates(x)))
     show
         exists(x, and(mortal(x), socrates(x)))
     proof
         Step_1 = forall(x, impl(man(x), mortal(x)))               by Premise_1
         Step_2 = exists(x, and(man(x), socrates(x)))              by Premise_2
         block Existential_Instantiation
-            Step_4 = and(man(k), socrates(k))                     by Let with Step_2, k
-            Step_5 = man(k)                                       by Simplification_Left with Step_4
-            Step_6 = impl(man(k), mortal(k))                      by Universal_Instantiation with Step_1, k
-            Step_7 = mortal(k)                                    by Modus_Ponens with Step_6, Step_5
-            Step_8 = socrates(k)                                  by Simplification_Right with Step_4
-            Step_9 = and(mortal(k), socrates(k))                  by Conjunction with Step_7, Step_8
-            Step_10 = exists(x, and(mortal(x), socrates(x)))      by Existential_Generalization with Step_9, k, x
+            Step_3 = and(man(k), socrates(k))                     by Let with Step_2, k
+            Step_4 = man(k)                                       by Simplification_Left with Step_3
+            Step_5 = impl(man(k), mortal(k))                      by Universal_Instantiation with Step_1, k
+            Step_6 = mortal(k)                                    by Modus_Ponens with Step_5, Step_4
+            Step_7 = socrates(k)                                  by Simplification_Right with Step_3
+            Step_8 = and(mortal(k), socrates(k))                  by Conjunction with Step_6, Step_7
+            Step_9 = exists(x, and(mortal(x), socrates(x)))       by Existential_Generalization with Step_8, k, x
         end
-        Step_11 = exists(x, and(mortal(x), socrates(x)))          by Tautology with Step_10
+        Step_10 = exists(x, and(mortal(x), socrates(x)))          by Tautology with Step_9
     qed
     ===> ok
 
@@ -307,6 +307,38 @@ Generalization (resp. Instantiation) shown together in one place, with abbreviat
     block EI
         Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
     end
+
+### A problem ###
+
+There still seems to be something missing, because I can "prove" that all men are Socrates:
+
+    given
+        Simplification_Right       = and(P, Q)                           |- Q
+        Tautology                  = P                                   |- P
+    
+        UG                         = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
+        UI                         = forall(X, P) ; V{term}              |- P[X -> V]
+        EG                         = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
+        block EI
+            Let                    = exists(X, P) ; V{unique local atom} |- P[X -> V]
+        end
+    
+        Premise                    = |- exists(x, and(man(x), socrates(x)))
+    show
+        forall(x, socrates(x))
+    proof
+        Step_1 = exists(x, and(man(x), socrates(x)))              by Premise
+        block EI
+            Step_2 = and(man(k), socrates(k))                     by Let with Step_1, k
+            Step_3 = socrates(k)                                  by Simplification_Right with Step_2
+            Step_4 = forall(x, socrates(x))                       by UG with Step_3, k, x
+        end
+        Step_5 = forall(x, socrates(x))                           by Tautology with Step_4
+    qed
+    ===> ok
+
+The problem is that you should only be able to lift *arbitrary* (that is, *non* local)
+variables into a forall.  So we'll need something like `X{nonlocal}` in the UI.
 
 Equational Reasoning
 --------------------
