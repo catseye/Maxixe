@@ -1,36 +1,7 @@
 # encoding: UTF-8
 
 
-class AbstractTerm(object):
-    def is_atom(self):
-        raise NotImplementedError
-
-    def is_ground(self):
-        raise NotImplementedError
-
-    def equals(self, t2):
-        raise NotImplementedError
-
-    def contains(self, other):
-        raise NotImplementedError
-
-    def replace(self, old, new):
-        raise NotImplementedError
-
-    def match(self, term, unifier):
-        raise NotImplementedError
-
-    def subst(self, unifier):
-        raise NotImplementedError
-
-    def resolve_substs(self, unifier):
-        raise NotImplementedError
-
-    def collect_atoms(self, atoms):
-        raise NotImplementedError
-
-
-class Term(AbstractTerm):
+class Term(object):
     def __init__(self, constructor, subterms=None):
         if subterms is None:
             subterms = []
@@ -52,6 +23,24 @@ class Term(AbstractTerm):
                 self.__class__.__name__, self.constructor
             )
 
+    def __eq__(self, other):
+        if not isinstance(other, Term):
+            return False
+        if self.constructor != other.constructor:
+            return False
+        if len(self.subterms) != len(other.subterms):
+            return False
+        for (st1, st2) in zip(self.subterms, other.subterms):
+            if st1 != st2:
+                return False
+        return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(str(self))
+
     def is_atom(self):
         return len(self.subterms) == 0
 
@@ -61,20 +50,8 @@ class Term(AbstractTerm):
                 return False
         return True
 
-    def equals(self, other):
-        if not isinstance(other, Term):
-            return False
-        if self.constructor != other.constructor:
-            return False
-        if len(self.subterms) != len(other.subterms):
-            return False
-        for (st1, st2) in zip(self.subterms, other.subterms):
-            if not st1.equals(st2):
-                return False
-        return True
-
     def contains(self, other):
-        if self.equals(other):
+        if self == other:
             return True
         for st in self.subterms:
             if st.contains(other):
@@ -82,7 +59,7 @@ class Term(AbstractTerm):
         return False
 
     def replace(self, old, new):
-        if self.equals(old):
+        if self == old:
             return new
         else:
             return Term(self.constructor, subterms=[subterm.replace(old, new) for subterm in self.subterms])
@@ -103,13 +80,13 @@ class Term(AbstractTerm):
 
     def collect_atoms(self, atoms):
         if self.is_atom():
-            atoms.add(str(self))
+            atoms.add(self)
         else:
             for subterm in self.subterms:
                 subterm.collect_atoms(atoms)
 
 
-class Var(AbstractTerm):
+class Var(object):
     def __init__(self, name):
         assert name[0].isupper()
         self.name = name
@@ -120,16 +97,19 @@ class Var(AbstractTerm):
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.name)
 
+    def __eq__(self, other):
+        if not isinstance(other, Var):
+            return False
+        return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+
     def is_atom(self):
         return False
 
     def is_ground(term):
         return False
-
-    def equals(self, other):
-        if not isinstance(other, Var):
-            return False
-        return self.name == other.name
 
     def match(self, term, unifier):
         if self.name in unifier:
@@ -147,7 +127,7 @@ class Var(AbstractTerm):
         pass
 
 
-class Substor(AbstractTerm):
+class Substor(object):
     def __init__(self, subterm, substs):
         self.subterm = subterm
         self.substs = substs  # list of pairs of terms

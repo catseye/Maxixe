@@ -17,7 +17,7 @@ class Checker(object):
             else:
                 self.check_step(step)
 
-        if not self.last_step.term.equals(self.proof.goal):
+        if self.last_step.term != self.proof.goal:
             raise ValueError("proof does not reach goal")
 
     def check_block(self, block):
@@ -32,7 +32,7 @@ class Checker(object):
             self.check_case(case_num + 1, block_rule_case, case)
             if last_term is None:
                 last_term = case.steps[-1].term
-            elif not last_term.equals(case.steps[-1].term):
+            elif last_term != case.steps[-1].term:
                 raise ValueError("cases do not finish with same term")
 
         self.current_block, self.local_atoms = prev_block, prev_local_atoms
@@ -56,7 +56,7 @@ class Checker(object):
         final_atoms = set()
         case.steps[-1].term.collect_atoms(final_atoms)
         for atom in self.local_atoms:
-            if str(atom) in final_atoms:
+            if atom in final_atoms:
                 raise ValueError("Local atom '%s' cannot be used in final step of case" % atom)
 
     def check_step(self, step):
@@ -95,7 +95,7 @@ class Checker(object):
                 with_term = with_step.term
             with_terms.append(with_term)
             if hypothesis.has_attribute('unique'):
-                if str(with_term) in self.used_atoms:
+                if with_term in self.used_atoms:
                     raise ValueError("In %s, '%s' has already been used as an atom in this proof" % (step.by.name, with_term))
 
         instance = rule.conclusion.subst(unifier)
@@ -103,7 +103,7 @@ class Checker(object):
 
         instance = instance.resolve_substs(unifier)
         
-        if not instance.equals(step.term):
+        if instance != step.term:
             raise ValueError("%s does not follow from %s with %s - it would be %s." % (
                 step.term, step.by.name, ' ; '.join([str(t) for t in with_terms]), instance
             ))
