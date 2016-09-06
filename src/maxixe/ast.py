@@ -20,8 +20,10 @@ class Proof(AST):
     def get_rule(self, rule_name):
         return self.rule_map[rule_name]
 
-    def get_block_rule(self, block_rule_name):
-        return self.block_rule_map[block_rule_name]
+    def get_block_rule(self, var):
+        if var is None:
+            return BlockRule(cases=[BlockRuleCase(initial=None, final=None)])
+        return self.block_rule_map[var.name]
 
     def find_step_and_block(self, step_name):
         return self.step_map[step_name]

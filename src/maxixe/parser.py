@@ -38,17 +38,11 @@ class Parser(object):
                 rules.append(self.rule())
         self.scanner.expect('show')
         goal = self.term()
-
-        steps = []
         self.scanner.expect('proof')
-        while not self.scanner.on('qed'):
-            if self.scanner.on('block'):
-                steps.append(self.block(1))
-            else:
-                steps.append(self.step())
+        block = self.block(0)
         self.scanner.expect('qed')
         return Proof(
-            rules=rules, goal=goal, steps=steps,
+            rules=rules, goal=goal, block=block,
             rule_map=self.rule_map, block_rule_map=self.block_rule_map, step_map=self.step_map
         )
 
@@ -108,8 +102,7 @@ class Parser(object):
 
     def block(self, level):
         cases = []
-        self.scanner.expect('block')
-        name = self.var()
+        name = None if level == 0 else self.var()
         prev_block = self.current_block
         block = Block(name=name, cases=cases, level=level)
         self.current_block = block
@@ -120,15 +113,15 @@ class Parser(object):
                 self.scanner.expect('end')
         else:
             cases.append(self.block_case(level))
-        self.scanner.expect('end')
         self.current_block = prev_block
         return block
 
     def block_case(self, level):
         steps = []
-        while not self.scanner.on('end'):
-            if self.scanner.on('block'):
+        while not self.scanner.on('end', 'qed'):
+            if self.scanner.consume('block'):
                 steps.append(self.block(level + 1))
+                self.scanner.expect('end')
             else:
                 steps.append(self.step())
         return BlockCase(steps=steps)

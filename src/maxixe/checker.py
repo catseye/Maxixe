@@ -21,11 +21,7 @@ class Checker(object):
         if not self.proof.goal.is_ground():
             raise ProofStructureError("goal is not ground")
 
-        for step in self.proof.steps:
-            if isinstance(step, Block):
-                self.check_block(step)
-            else:
-                self.check_step(step)
+        self.check_block(self.proof.block)
 
         if self.current_step.term != self.proof.goal:
             raise ProofStructureError("proof does not reach goal")
@@ -34,7 +30,7 @@ class Checker(object):
         prev_block, prev_local_atoms = self.current_block, self.local_atoms
         self.current_block, self.local_atoms = block, set()
 
-        block_rule = self.proof.get_block_rule(self.current_block.name.name)
+        block_rule = self.proof.get_block_rule(self.current_block.name)
         if len(block_rule.cases) != len(block.cases):
             raise ProofStructureError("block must have same number of cases as block rule")
         last_term = None
@@ -48,7 +44,7 @@ class Checker(object):
         self.current_block, self.local_atoms = prev_block, prev_local_atoms
 
     def check_case(self, case_num, block_rule_case, case):
-        if case.steps[0].by.name != block_rule_case.initial.var.name:
+        if block_rule_case.initial is not None and case.steps[0].by.name != block_rule_case.initial.var.name:
             raise ProofStructureError("initial step of case %s of %s must use rule %s" %
                 (case_num, self.current_block.name, block_rule_case.initial.var.name)
             )
