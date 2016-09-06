@@ -788,3 +788,52 @@ it does not occur in the final step of any case of the block.
         S4 = b by D with S3
     qed
     ???> Local atom 'b' cannot be used in final step of case
+
+If a hypothesis has the `nonlocal` attribute, its argument must be a term, and that term may
+not contain any atoms which are local to the block in which the hypothesis is invoked.
+
+    given
+        A =   |- a
+        block Subproof
+            case
+                B = a ; Q{local atom}    |- Q
+                C = b ; Q{nonlocal term} |- c
+            end
+        end
+        D = c |- d
+    show
+        d
+    proof
+        S1 = a by A
+        block Subproof
+            case
+                S2 = b by B with S1, b
+                S3 = c by C with S2, fun(c)
+            end
+        end
+        S4 = d by D with S3
+    qed
+    ===> ok
+
+    given
+        A =   |- a
+        block Subproof
+            case
+                B = a ; Q{local atom}    |- Q
+                C = b ; Q{nonlocal term} |- c
+            end
+        end
+        D = c |- d
+    show
+        d
+    proof
+        S1 = a by A
+        block Subproof
+            case
+                S2 = b by B with S1, b
+                S3 = c by C with S2, fun(b)
+            end
+        end
+        S4 = d by D with S3
+    qed
+    ???> must not contain local atom 'b'

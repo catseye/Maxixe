@@ -145,10 +145,10 @@ We use `c(zero)` to represent zero because we can't use `zero` because then you 
 a variable name and say something silly like `forall(zero, ...)`.
 
     given
-        Premise                  =                               |- eq(add(x, c(zero)), x)
-        Commutivity_of_Equality  = eq(E1, E0)                    |- impl(eq(E1, E0), eq(E0, E1))
-        Modus_Ponens             = P0 ; impl(P0, P1)             |- P1
-        Universal_Generalization = P  ; X{term} ; V{atom}        |- forall(V, P[X -> V])
+        Premise                  =                                 |- eq(add(x, c(zero)), x)
+        Commutivity_of_Equality  = eq(E1, E0)                      |- impl(eq(E1, E0), eq(E0, E1))
+        Modus_Ponens             = P0 ; impl(P0, P1)               |- P1
+        Universal_Generalization = P  ; X{nonlocal term} ; V{atom} |- forall(V, P[X -> V])
     show
         forall(y, eq(y, add(y, c(zero))))
     proof
@@ -180,8 +180,8 @@ like instantiating ∀x.∃y.x≠y with y, to obtain ∃y.y≠y.
             Conclusion           = P ; Q          |- impl(P, Q)
         end
     
-        Universal_Generalization = P ; X{term} ; V{atom}         |- forall(V, P[X -> V])
-        Universal_Instantiation  = forall(X, P) ; V{term}        |- P[X -> V]
+        Universal_Generalization = P ; X{nonlocal term} ; V{atom} |- forall(V, P[X -> V])
+        Universal_Instantiation  = forall(X, P) ; V{term}         |- P[X -> V]
     
         Premise_1                = |- forall(x, impl(bug(x), creepy(x)))
         Premise_2                = |- forall(x, impl(bug(x), crawly(x)))
@@ -208,11 +208,11 @@ What if we really did want to show `forall(x, eq(x, add(x, c(zero))))`?
 Can we do it with an instantiation step?
 
     given
-        Premise                  =                               |- eq(add(x, c(zero)), x)
-        Commutivity_of_Equality  = eq(E1, E0)                    |- impl(eq(E1, E0), eq(E0, E1))
-        Modus_Ponens             = P0 ; impl(P0, P1)             |- P1
-        Universal_Generalization = P  ; X{term} ; V{atom}        |- forall(V, P[X -> V])
-        Universal_Instantiation  = forall(X, P) ; V{term}        |- P[X -> V]
+        Premise                  =                                 |- eq(add(x, c(zero)), x)
+        Commutivity_of_Equality  = eq(E1, E0)                      |- impl(eq(E1, E0), eq(E0, E1))
+        Modus_Ponens             = P0 ; impl(P0, P1)               |- P1
+        Universal_Generalization = P  ; X{nonlocal term} ; V{atom} |- forall(V, P[X -> V])
+        Universal_Instantiation  = forall(X, P) ; V{term}          |- P[X -> V]
     show
         forall(x, eq(x, add(x, c(zero))))
     proof
@@ -301,71 +301,12 @@ like instantiating ∃x.∀y.p(y)→x≠y with y, to obtain ∀y.p(y)→y≠y.
 For comparison, here are all of the rules for Universal (resp. Existential)
 Generalization (resp. Instantiation) shown together in one place, with abbreviated names:
 
-    UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
-    UI           = forall(X, P) ; V{term}              |- P[X -> V]
-    EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
+    UG           = P ;  X{nonlocal term} ; V{atom}              |- forall(V, P[X -> V])
+    UI           = forall(X, P)          ; V{term}              |- P[X -> V]
+    EG           = P ;  X{term}          ; V{atom}              |- exists(V, P[X -> V])
     block EI
-        Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
+        Let      = exists(X, P)          ; V{unique local atom} |- P[X -> V]
     end
-
-### A problem ###
-
-There still seems to be something missing, because I can "prove" that all men are Socrates:
-
-    given
-        Simplification_Right       = and(P, Q)                           |- Q
-        Tautology                  = P                                   |- P
-    
-        UG                         = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
-        UI                         = forall(X, P) ; V{term}              |- P[X -> V]
-        EG                         = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
-        block EI
-            Let                    = exists(X, P) ; V{unique local atom} |- P[X -> V]
-        end
-    
-        Premise                    = |- exists(x, and(man(x), socrates(x)))
-    show
-        forall(x, socrates(x))
-    proof
-        Step_1 = exists(x, and(man(x), socrates(x)))              by Premise
-        block EI
-            Step_2 = and(man(k), socrates(k))                     by Let with Step_1, k
-            Step_3 = socrates(k)                                  by Simplification_Right with Step_2
-            Step_4 = forall(x, socrates(x))                       by UG with Step_3, k, x
-        end
-        Step_5 = forall(x, socrates(x))                           by Tautology with Step_4
-    qed
-    ===> ok
-
-The problem is that you should only be able to lift *arbitrary* (that is, *non* local)
-variables into a forall.  So let's try to fix that by adding `X{nonlocal}` in the UG.
-
-    given
-        Simplification_Right       = and(P, Q)                           |- Q
-        Tautology                  = P                                   |- P
-    
-        UG                         = P ;  X{nonlocal term} ; V{atom}     |- forall(V, P[X -> V])
-        UI                         = forall(X, P)          ; V{term}     |- P[X -> V]
-        EG                         = P ;  X{term}          ; V{atom}     |- exists(V, P[X -> V])
-        block EI
-            Let                    = exists(X, P) ; V{unique local atom} |- P[X -> V]
-        end
-    
-        Premise                    = |- exists(x, and(man(x), socrates(x)))
-    show
-        forall(x, socrates(x))
-    proof
-        Step_1 = exists(x, and(man(x), socrates(x)))              by Premise
-        block EI
-            Step_2 = and(man(k), socrates(k))                     by Let with Step_1, k
-            Step_3 = socrates(k)                                  by Simplification_Right with Step_2
-            Step_4 = forall(x, socrates(x))                       by UG with Step_3, k, x
-        end
-        Step_5 = forall(x, socrates(x))                           by Tautology with Step_4
-    qed
-    ???> must not contain local atom 'k'
-
-Better.
 
 Equational Reasoning
 --------------------
