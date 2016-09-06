@@ -338,7 +338,34 @@ There still seems to be something missing, because I can "prove" that all men ar
     ===> ok
 
 The problem is that you should only be able to lift *arbitrary* (that is, *non* local)
-variables into a forall.  So we'll need something like `X{nonlocal}` in the UI.
+variables into a forall.  So let's try to fix that by adding `X{nonlocal}` in the UG.
+
+    given
+        Simplification_Right       = and(P, Q)                           |- Q
+        Tautology                  = P                                   |- P
+    
+        UG                         = P ;  X{nonlocal term} ; V{atom}     |- forall(V, P[X -> V])
+        UI                         = forall(X, P)          ; V{term}     |- P[X -> V]
+        EG                         = P ;  X{term}          ; V{atom}     |- exists(V, P[X -> V])
+        block EI
+            Let                    = exists(X, P) ; V{unique local atom} |- P[X -> V]
+        end
+    
+        Premise                    = |- exists(x, and(man(x), socrates(x)))
+    show
+        forall(x, socrates(x))
+    proof
+        Step_1 = exists(x, and(man(x), socrates(x)))              by Premise
+        block EI
+            Step_2 = and(man(k), socrates(k))                     by Let with Step_1, k
+            Step_3 = socrates(k)                                  by Simplification_Right with Step_2
+            Step_4 = forall(x, socrates(x))                       by UG with Step_3, k, x
+        end
+        Step_5 = forall(x, socrates(x))                           by Tautology with Step_4
+    qed
+    ???> must not contain local atom 'k'
+
+Better.
 
 Equational Reasoning
 --------------------

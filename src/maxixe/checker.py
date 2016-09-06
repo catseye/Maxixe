@@ -87,6 +87,14 @@ class Checker(object):
             elif hypothesis.has_attribute('term'):
                 hypothesis.term.match(with_, unifier)
                 with_term = with_
+                if hypothesis.has_attribute('nonlocal'):
+                    atoms = set()
+                    with_term.collect_atoms(atoms)
+                    for atom in self.local_atoms:
+                        if atom in atoms:
+                            self.step_error("argument '%s' to hypothesis '%s' must not contain local atom '%s'" % (
+                                with_, hypothesis, atom
+                            ))
             else:
                 with_step, from_block = self.proof.find_step_and_block(with_.name)
                 if from_block.level > block.level:
