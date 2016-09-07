@@ -342,11 +342,11 @@ Number Theory
 If y is odd, then y+1 is even.
 
     given
-        UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
-        UI           = forall(X, P) ; V{term}              |- P[X -> V]
-        EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
+        UG           = P ; X{nonlocal term} ; V{atom}              |- forall(V, P[X -> V])
+        UI           = forall(X, P)         ; V{term}              |- P[X -> V]
+        EG           = P ; X{term}          ; V{atom}              |- exists(V, P[X -> V])
         block EI
-            Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
+            Let      = exists(X, P)         ; V{unique local atom} |- P[X -> V]
         end
     
         Weakening            = biimpl(X, Y)   |- impl(X, Y)
@@ -393,11 +393,11 @@ If y is odd, then y+1 is even.
 The sum of an odd number and an odd number is an even number.
 
     given
-        UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
-        UI           = forall(X, P) ; V{term}              |- P[X -> V]
-        EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
+        UG           = P ; X{nonlocal term} ; V{atom}              |- forall(V, P[X -> V])
+        UI           = forall(X, P)         ; V{term}              |- P[X -> V]
+        EG           = P ; X{term}          ; V{atom}              |- exists(V, P[X -> V])
         block EI
-            Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
+            Let      = exists(X, P)         ; V{unique local atom} |- P[X -> V]
         end
     
         Weakening            = biimpl(X, Y)   |- impl(X, Y)
