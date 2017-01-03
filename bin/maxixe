@@ -5,16 +5,27 @@ import sys
 
 sys.path.insert(0, join(dirname(realpath(sys.argv[0])), '..', 'src'))
 
-from maxixe.parser import Parser
+from maxixe.parser import Parser, SugaredParser
 from maxixe.checker import Checker
 
 
-if __name__ == '__main__':
-    filename = sys.argv[1]
+def main(args):
+    parser_cls = Parser
+    while args and args[0].startswith('--'):
+        option = args.pop(0)
+        if option == '--sugar':
+            parser_cls = SugaredParser
+        else:
+            raise NotImplementedError(option)
+    filename = args.pop(0)
     with open(filename, 'r') as f:
-        p = Parser(f.read())
+        p = parser_cls(f.read().decode('utf-8'))
     proof = p.proof()
     c = Checker(proof)
     c.check()
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
     print 'ok'
     sys.exit(0)
