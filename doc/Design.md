@@ -17,11 +17,12 @@ Maxixe's design goals are:
     stated.
 
 *   **Generality**: the proof language itself should make as few assumptions about
-    the object language as possible.  In particular, it shouldn't "know logic".
+    the object language as possible.  It shouldn't be tied to any particular system
+    of logic — as far as possible, it should be purely a [proof calculus][].
 
 *   **Predicate Logic**: on the other hand, the proof language should, when given
     the rules of predicate logic, be powerful enough to allow one to check proofs
-    using predicate logic.
+    using predicate logic (a.k.a. first-order logic).
 
 *   **Correctness**: the proof-checking capability of the language must not
     claim that an incorrect proof is correct for the given rules.  It would also
@@ -51,13 +52,15 @@ Here are some things which are *not* goals of Maxixe:
 
 *   **Generality**: instead of coding the rules for Existential Instantiation (etc) in
     the proof language, we have coded constraints on hypotheses and conclusions which
-    allow rules like EI to be written.
+    allow rules like EI to be written.  It's basically a [natural deduction][]-like system
+    in which propositional logic, predicate logic, and other logics (ones that
+    don't rely too heavily on side conditions for their rules) can be captured.
 
-*   **Predicate Logic**: see the Generality point above.  It's probably close, but I wouldn't
-    put money on it quite yet.
+*   **Predicate Logic**: see the Generality point above.  I believe the examples show
+    that a significant portion, if not all, of first-order logic, can be coded in Maxixe.
 
-*   **Correctness**: see the Disclaimer in the README.  It's probably close, but I wouldn't
-    put money on it quite yet.
+*   **Correctness**: see the Disclaimer in the README.  It's probably very close, but I
+    wouldn't put money on it quite yet.  Bugs are always possible.
 
 Related Work
 ------------
@@ -96,3 +99,5 @@ a huge body of work rendered to web pages though, so you should check it out too
 [The Incredible Proof Machine]:     http://incredible.pm/
 [Post canonical systems]:           https://en.wikipedia.org/wiki/Post_canonical_system
 [MetaMath]:                         http://us.metamath.org/
+[proof calculus]:                   https://en.wikipedia.org/wiki/Proof_calculus
+[natural deduction]:                https://en.wikipedia.org/wiki/Natural_deduction
