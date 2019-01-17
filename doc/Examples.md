@@ -311,15 +311,29 @@ Generalization (resp. Instantiation) shown together in one place, with abbreviat
 Equational Reasoning
 --------------------
 
-Maxixe is not restricted to "logic" per se, by which I mean Modus Ponens and all that;
-the rules of inference that are given can describe any algebra, with or without
-accompanying logical connectives.  Here, we give an example of a proof of a simple
-property of monoids.  It's simple enough that it does need any "logical" machinery,
-only equational reasoning.
+Maxixe is not restricted to propositional and predicate logic.  While
+some systems of logic impose their own side conditions that cannot
+be expressed in Maxixe (for example, [relevance logic][] requires that
+the consequent of every rule be "relevant" to its premiss) and thus
+cannot be checked, other systems of logic (or fragments thereof) can
+be expressed in it.  Maxixe tries to be very general in this way, and
+to not impose unnecessary restrictions.
 
-In this proof, `o(X, Y)` is the monoid operation.  `m(X)` means X is an element of the
-monoid, `id(X)` means X is an identity element (meaning, *the* identity element, but we
-don't assume or prove that it is unique.)  We show that `ee=e`.
+One such logic is [equational logic][], which is the logic that
+underpins universal algebra.  The basic idea is "replacing equals
+with equals", and often it is convenient to work with it without
+even regarding it as a logic per se — often this process is referred
+to only as "equational reasoning".  (A bit of trivia: there was an
+early educational version of the programming language Haskell called
+"Gofer", which is an acronym for "Good for equational reasoning".)
+
+Here, we give an example of a proof of a simple property of monoids
+using equational reasoning.
+
+In this proof, `o(X, Y)` is the monoid operation.  `m(X)` means X
+is an element of the monoid, `id(X)` means X is an identity element
+(meaning, *the* identity element, but we don't assume or prove that it
+is unique.)  We show that, if `e` is an identity element, then `ee=e`.
 
     given
         Closure                   = m(A) ; m(B)          |- m(o(A, B))
@@ -335,6 +349,9 @@ don't assume or prove that it is unique.)  We show that `ee=e`.
         Step_3 = eq(o(e, e), e)   by Identity with Step_2, Step_1
     qed
     ===> ok
+
+[relevance logic]: http://en.wikipedia.org/wiki/Relevance_logic
+[equational logic]: http://en.wikipedia.org/wiki/Equational_logic
 
 Number Theory
 -------------
