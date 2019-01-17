@@ -116,6 +116,41 @@ A proof that disjunction is commutative.
     qed
     ===> ok
 
+### Proof by Contradiction ###
+
+If we assume p and show that it leads to a contradiction,
+we can then infer ¬p.  If we can use proof by contradiction,
+we can derive Modus Tollens.
+
+    given
+        Modus_Ponens            = impl(P, Q) ; P |- Q
+    
+        Double_Negation         = not(not(P))    |- P
+        Contradiction           = P ; not(P)     |- bottom
+        Explosion               = bottom         |- P
+    
+        block Reductio_ad_Absurdum
+            Supposition         = A{term}        |- A
+            Conclusion          = bottom         |- not(A)
+        end
+    
+        Premise_1               =                |- impl(p, q)
+        Premise_2               =                |- not(q)
+    show
+        not(p)
+    proof
+        Step_1 = impl(p, q)                               by Premise_1
+        Step_2 = not(q)                                   by Premise_2
+        block Reductio_ad_Absurdum
+            Step_3 = p                                    by Supposition with p
+            Step_4 = q                                    by Modus_Ponens with Step_1, Step_3
+            Step_5 = bottom                               by Contradiction with Step_4, Step_2
+            Step_6 = not(p)                               by Conclusion with Step_5
+        end
+        Step_7 = not(p)                                   by Tautology with Step_6
+    qed
+    ===> ok
+
 Predicate Logic
 ---------------
 
