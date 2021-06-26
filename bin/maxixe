@@ -16,5 +16,5 @@ if __name__ == '__main__':
     proof = p.proof()
     c = Checker(proof)
     c.check()
-    print 'ok'
+    print('ok')
     sys.exit(0)

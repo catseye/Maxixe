@@ -7,7 +7,7 @@ class AST(object):
     def __repr__(self):
         return "%s(%s)" % (
             self.__class__.__name__,
-            ', '.join(['%s=%r' % (k, v) for k, v in self.attrs.iteritems()])
+            ', '.join(['%s=%r' % (k, v) for k, v in self.attrs.items()])
         )
 
     def __getattr__(self, name):
