@@ -119,8 +119,8 @@ A proof that disjunction is commutative.
 ### Proof by Contradiction ###
 
 If we assume p and show that it leads to a contradiction,
-we can then infer ¬p.  If we can use proof by contradiction,
-we can derive Modus Tollens.
+we can then infer ¬p.  We can use proof by contradiction
+to try to derive Modus Tollens:
 
     given
         Modus_Ponens            = impl(P, Q) ; P |- Q
@@ -149,7 +149,12 @@ we can derive Modus Tollens.
         end
         Step_7 = not(p)                                   by Tautology with Step_6
     qed
-    ===> ok
+
+This proof is not yet accepted by Maxixe, and the reason seems to be
+a small technical one: the scope of the bound variable `A` does not
+extend to the right-hand side of the Conclusion of the
+`Reduction_ad_Absurdum` block.  That's unfortunate, and I don't know
+at the moment how much work it would take to fix.
 
 Predicate Logic
 ---------------

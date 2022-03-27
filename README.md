@@ -32,7 +32,7 @@ For a description of the language, see [doc/Maxixe.md](doc/Maxixe.md).
 For examples of proofs witten in Maxixe, see [doc/Examples.md](doc/Examples.md).
 
 The reference implementation of Maxixe, called `maxixe`, is written in Python,
-and runs under (at least) Python 2.7.12 and Python 3.5.2.  To use `maxixe`,
+and runs under (at least) Python 2.7.18 and Python 3.8.10.  To use `maxixe`,
 simply add the `bin` directory of this repository to your executable search path
 and run it on a text file containing your proof, like
 
@@ -52,7 +52,7 @@ Note that since Maxixe requires that you supply all the axioms and rules of
 inference used in a proof, it is entirely possible to give it an inconsistent
 system of logic in which anything can be proved — but that's not quite the
 same thing as what I'm talking about.  Such a proof is still "valid", relative
-to logic that it is using.
+to the definitions that it is using, even if those definitions are flawed.
 
 But on that note, I am also not prepared to claim that all of the rules of
 inference I've used in the example proofs Maxixe are consistent (or otherwise

@@ -57,7 +57,8 @@ Here are some things which are *not* goals of Maxixe:
     don't rely too heavily on side conditions for their rules) can be captured.
 
 *   **Predicate Logic**: see the Generality point above.  I believe the examples show
-    that a significant portion, if not all, of first-order logic, can be coded in Maxixe.
+    that a significant portion, but perhaps not yet all, of first-order logic, can be coded
+    in Maxixe.
 
 *   **Correctness**: see the Disclaimer in the README.  It's probably very close, but I
     wouldn't put money on it quite yet.  Bugs are always possible.
