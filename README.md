@@ -1,7 +1,11 @@
 Maxixe
 ======
 
-*Version 0.2.  Subject to change in backwards-incompatible ways.*
+Version 0.2 | _Entry_ [@ catseye.tc](https://catseye.tc/node/Maxixe)
+| _See also:_ [Madison](https://catseye.tc/node/Madison)
+∘ [LCF-Style-ND](https://github.com/cpressey/LCF-Style-ND#readme)
+
+- - - -
 
 Maxixe is a simple proof-checking language.  Given a proof written out fully and
 explicitly (including all rules of inference), a computer can check if it is valid
