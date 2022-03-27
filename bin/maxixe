@@ -19,7 +19,7 @@ def main(args):
             raise NotImplementedError(option)
     filename = args.pop(0)
     with open(filename, 'r') as f:
-        p = parser_cls(f.read().decode('utf-8'))
+        p = parser_cls(f.read())
     proof = p.proof()
     c = Checker(proof)
     c.check()
