@@ -1,0 +1,18 @@
+given
+    Modus_Ponens                 = impl(P, Q)    ; P           |- Q
+    Addition                     = P                           |- or(P, Q)
+    Simplification               = and(P, Q)                   |- Q
+    Conjunction                  = P             ; Q           |- and(P, Q)
+
+    Commutativity_of_Conjunction = and(P, Q)                   |- and(Q, P)
+
+    Premise                      =                             |- and(p, impl(p, q))
+show
+    q
+proof
+    Step_1 = and(p, impl(p, q))              by Premise
+    Step_2 = and(impl(p, q), p)              by Commutativity_of_Conjunction with Step_1
+    Step_3 = impl(p, q)                      by Simplification with Step_1
+    Step_4 = p                               by Simplification with Step_2
+    Step_5 = q                               by Modus_Ponens with Step_3, Step_4
+qed

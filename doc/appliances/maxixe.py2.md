@@ -1,3 +1,2 @@
     -> Functionality "Check Maxixe proof" is implemented by
-    -> shell command "bin/maxixe %(test-body-file)"
-
+    -> shell command "python2 bin/maxixe %(test-body-file)"

@@ -116,6 +116,46 @@ A proof that disjunction is commutative.
     qed
     ===> ok
 
+### Proof by Contradiction ###
+
+If we assume p and show that it leads to a contradiction,
+we can then infer ¬p.  We can use proof by contradiction
+to try to derive Modus Tollens:
+
+    given
+        Modus_Ponens            = impl(P, Q) ; P |- Q
+    
+        Double_Negation         = not(not(P))    |- P
+        Contradiction           = P ; not(P)     |- bottom
+        Explosion               = bottom         |- P
+    
+        block Reductio_ad_Absurdum
+            Supposition         = A{term}        |- A
+            Conclusion          = bottom         |- not(A)
+        end
+    
+        Premise_1               =                |- impl(p, q)
+        Premise_2               =                |- not(q)
+    show
+        not(p)
+    proof
+        Step_1 = impl(p, q)                               by Premise_1
+        Step_2 = not(q)                                   by Premise_2
+        block Reductio_ad_Absurdum
+            Step_3 = p                                    by Supposition with p
+            Step_4 = q                                    by Modus_Ponens with Step_1, Step_3
+            Step_5 = bottom                               by Contradiction with Step_4, Step_2
+            Step_6 = not(p)                               by Conclusion with Step_5
+        end
+        Step_7 = not(p)                                   by Tautology with Step_6
+    qed
+
+This proof is not yet accepted by Maxixe, and the reason seems to be
+a small technical one: the scope of the bound variable `A` does not
+extend to the right-hand side of the Conclusion of the
+`Reduction_ad_Absurdum` block.  That's unfortunate, and I don't know
+at the moment how much work it would take to fix.
+
 Predicate Logic
 ---------------
 
@@ -311,15 +351,29 @@ Generalization (resp. Instantiation) shown together in one place, with abbreviat
 Equational Reasoning
 --------------------
 
-Maxixe is not restricted to "logic" per se, by which I mean Modus Ponens and all that;
-the rules of inference that are given can describe any algebra, with or without
-accompanying logical connectives.  Here, we give an example of a proof of a simple
-property of monoids.  It's simple enough that it does need any "logical" machinery,
-only equational reasoning.
+Maxixe is not restricted to propositional and predicate logic.  While
+some systems of logic impose their own side conditions that cannot
+be expressed in Maxixe (for example, [relevance logic][] requires that
+the consequent of every rule be "relevant" to its premiss) and thus
+cannot be checked, other systems of logic (or fragments thereof) can
+be expressed in it.  Maxixe tries to be very general in this way, and
+to not impose unnecessary restrictions.
 
-In this proof, `o(X, Y)` is the monoid operation.  `m(X)` means X is an element of the
-monoid, `id(X)` means X is an identity element (meaning, *the* identity element, but we
-don't assume or prove that it is unique.)  We show that `ee=e`.
+One such logic is [equational logic][], which is the logic that
+underpins universal algebra.  The basic idea is "replacing equals
+with equals", and often it is convenient to work with it without
+even regarding it as a logic per se — often this process is referred
+to only as "equational reasoning".  (A bit of trivia: there was an
+early educational version of the programming language Haskell called
+"Gofer", which is an acronym for "Good for equational reasoning".)
+
+Here, we give an example of a proof of a simple property of monoids
+using equational reasoning.
+
+In this proof, `o(X, Y)` is the monoid operation.  `m(X)` means X
+is an element of the monoid, `id(X)` means X is an identity element
+(meaning, *the* identity element, but we don't assume or prove that it
+is unique.)  We show that, if `e` is an identity element, then `ee=e`.
 
     given
         Closure                   = m(A) ; m(B)          |- m(o(A, B))
@@ -336,17 +390,20 @@ don't assume or prove that it is unique.)  We show that `ee=e`.
     qed
     ===> ok
 
+[relevance logic]: http://en.wikipedia.org/wiki/Relevance_logic
+[equational logic]: http://en.wikipedia.org/wiki/Equational_logic
+
 Number Theory
 -------------
 
 If y is odd, then y+1 is even.
 
     given
-        UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
-        UI           = forall(X, P) ; V{term}              |- P[X -> V]
-        EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
+        UG           = P ; X{nonlocal term} ; V{atom}              |- forall(V, P[X -> V])
+        UI           = forall(X, P)         ; V{term}              |- P[X -> V]
+        EG           = P ; X{term}          ; V{atom}              |- exists(V, P[X -> V])
         block EI
-            Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
+            Let      = exists(X, P)         ; V{unique local atom} |- P[X -> V]
         end
     
         Weakening            = biimpl(X, Y)   |- impl(X, Y)
@@ -393,11 +450,11 @@ If y is odd, then y+1 is even.
 The sum of an odd number and an odd number is an even number.
 
     given
-        UG           = P ;  X{term} ; V{atom}              |- forall(V, P[X -> V])
-        UI           = forall(X, P) ; V{term}              |- P[X -> V]
-        EG           = P ;  X{term} ; V{atom}              |- exists(V, P[X -> V])
+        UG           = P ; X{nonlocal term} ; V{atom}              |- forall(V, P[X -> V])
+        UI           = forall(X, P)         ; V{term}              |- P[X -> V]
+        EG           = P ; X{term}          ; V{atom}              |- exists(V, P[X -> V])
         block EI
-            Let      = exists(X, P) ; V{unique local atom} |- P[X -> V]
+            Let      = exists(X, P)         ; V{unique local atom} |- P[X -> V]
         end
     
         Weakening            = biimpl(X, Y)   |- impl(X, Y)

@@ -155,6 +155,9 @@ class Parser(object):
         return step
 
     def term(self):
+        return self.basic_term()
+
+    def basic_term(self):
         if self.scanner.on_type('variable'):
             return self.var()
         self.scanner.check_type('atom')
@@ -193,3 +196,28 @@ class Parser(object):
         self.scanner.expect('->')
         rhs = self.term()
         return (lhs, rhs)
+
+
+# Term          ::= Term0 {"∨" Term0}.
+# Term0         ::= Term1 {"∧" Term1}.
+# Term1         ::= BasicTerm.
+
+
+class SugaredParser(Parser):
+
+    def term(self):
+        term_a = self.term0()
+        while self.scanner.consume(u'∨'):
+            term_b = self.term0()
+            term_a = Term('or', [term_a, term_b])
+        return term_a
+
+    def term0(self):
+        term_a = self.term1()
+        while self.scanner.consume(u'∧'):
+            term_b = self.term1()
+            term_a = Term('and', [term_a, term_b])
+        return term_a
+
+    def term1(self):
+        return self.basic_term()
