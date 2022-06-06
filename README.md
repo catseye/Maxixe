@@ -2,8 +2,9 @@ Maxixe
 ======
 
 Version 0.2 | _Entry_ [@ catseye.tc](https://catseye.tc/node/Maxixe)
-| _See also:_ [Madison](https://catseye.tc/node/Madison)
-∘ [LCF-Style-ND](https://github.com/cpressey/LCF-Style-ND#readme)
+| _See also:_ [Philomath](https://github.com/catseye/Philomath#readme)
+∘ [LCF-style-ND](https://github.com/cpressey/LCF-style-ND#readme)
+∘ [Madison](https://catseye.tc/node/Madison)
 
 - - - -
 
